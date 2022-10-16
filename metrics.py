@@ -1,4 +1,5 @@
 from skimage.metrics import structural_similarity as ssim
+from skimage import color
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
@@ -68,3 +69,45 @@ def IEM(imageA, imageB):
 	valB = IEM_filter(imageB)
 
 	return valB/valA
+
+def UCIQE(a,c1=0.4680,c2 = 0.2745,c3 = 0.2576):
+    """
+    Underwater colour image quality evaluation metric (UCIQE) é uma métrica baseada na combinação
+    linear de croma (pureza), saturação e contraste principalmente de imagens subaquáticas, mas também
+    baseadaem trabalhos atuais de avaliação de imagens coloridas atmosféricas. 
+    REF: M. Yang and A. Sowmya, "An Underwater Color Image Quality Evaluation Metric," in IEEE Transactions on Image Processing, 
+    vol. 24, no. 12, pp. 6062-6071, Dec. 2015, doi: 10.1109/TIP.2015.2491020.
+    
+    
+    :param a: imagem de entrada
+    :c1,c2,c3: coeficentes ponderados
+    :return c1 * sc + c2 * conl + c3 * us
+    """
+    rgb = a
+    lab = color.rgb2lab(a)
+    gray = color.rgb2gray(a)
+    l = lab[:,:,0]
+
+    #1st term
+    chroma = (lab[:,:,1]**2 + lab[:,:,2]**2)**0.5
+    uc = np.mean(chroma)
+    sc = (np.mean((chroma - uc)**2))**0.5
+
+    #2nd term
+    top = np.int(np.round(0.01*l.shape[0]*l.shape[1]))
+    sl = np.sort(l,axis=None)
+    isl = sl[::-1]
+    conl = np.mean(isl[:top])-np.mean(sl[:top])
+
+    #3rd term
+    satur = []
+    chroma1 = chroma.flatten()
+    l1 = l.flatten()
+    for i in range(len(l1)):
+        if chroma1[i] == 0: satur.append(0)
+        elif l1[i] == 0: satur.append(0)
+        else: satur.append(chroma1[i] / l1[i])
+
+    us = np.mean(satur)
+
+    return  c1 * sc + c2 * conl + c3 * us
