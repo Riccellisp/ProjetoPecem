@@ -1,9 +1,10 @@
 from skimage.metrics import structural_similarity as ssim
-from skimage import color
+from skimage import color,filters
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import math
+import sys
 
 def mse(imageA, imageB):
 	# the 'Mean Squared Error' between the two images is the
@@ -41,7 +42,7 @@ def AMBE(imageA, imageB):
 def eme(img,rowSample,columnSample):
 	
 	grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	
+
 	rowSize, columnSize = grayImg.shape
 	nRows = int(rowSize/rowSample)
 	nColumns = int(columnSize/columnSample)
@@ -224,43 +225,143 @@ def IEM(imageA, imageB):
 	return valB/valA
 
 def UCIQE(a,c1=0.4680,c2 = 0.2745,c3 = 0.2576):
-    """
-    Underwater colour image quality evaluation metric (UCIQE) é uma métrica baseada na combinação
-    linear de croma (pureza), saturação e contraste principalmente de imagens subaquáticas, mas também
-    baseadaem trabalhos atuais de avaliação de imagens coloridas atmosféricas. 
-    REF: M. Yang and A. Sowmya, "An Underwater Color Image Quality Evaluation Metric," in IEEE Transactions on Image Processing, 
-    vol. 24, no. 12, pp. 6062-6071, Dec. 2015, doi: 10.1109/TIP.2015.2491020.
+	"""
+	Underwater colour image quality evaluation metric (UCIQE) é uma métrica baseada na combinação
+	linear de croma (pureza), saturação e contraste principalmente de imagens subaquáticas, mas também
+	baseadaem trabalhos atuais de avaliação de imagens coloridas atmosféricas. 
+	REF: M. Yang and A. Sowmya, "An Underwater Color Image Quality Evaluation Metric," in IEEE Transactions on Image Processing, 
+	vol. 24, no. 12, pp. 6062-6071, Dec. 2015, doi: 10.1109/TIP.2015.2491020.
+
+
+	:param a: imagem de entrada
+	:c1,c2,c3: coeficentes ponderados
+	:return c1 * sc + c2 * conl + c3 * us
+	"""
+	rgb = a
+	lab = color.rgb2lab(a)
+	l = lab[:,:,0]
+
+	#1st term
+	chroma = (lab[:,:,1]**2 + lab[:,:,2]**2)**0.5
+	uc = np.mean(chroma)
+	sc = (np.mean((chroma - uc)**2))**0.5
+
+	#2nd term
+	top = np.int(np.round(0.01*l.shape[0]*l.shape[1]))
+	sl = np.sort(l,axis=None)
+	isl = sl[::-1]
+	conl = np.mean(isl[:top])-np.mean(sl[:top])
+
+	#3rd term
+	satur = []
+	chroma1 = chroma.flatten()
+	l1 = l.flatten()
+	for i in range(len(l1)):
+		if chroma1[i] == 0: satur.append(0)
+		elif l1[i] == 0: satur.append(0)
+		else: satur.append(chroma1[i] / l1[i])
+
+	us = np.mean(satur)
+
+	return  c1 * sc + c2 * conl + c3 * us
+
+def plipsum(i,j,gamma=1026):
+    return i + j - i * j / gamma
+
+def plipsub(i,j,k=1026):
+    return k * (i - j) / (k - j)
+
+def plipmult(c,j,gamma=1026):
+    return gamma - gamma * (1 - j / gamma)**c
+
+def logamee(ch,blocksize=8):
+
+    num_x = math.ceil(ch.shape[0] / blocksize)
+    num_y = math.ceil(ch.shape[1] / blocksize)
     
-    
-    :param a: imagem de entrada
-    :c1,c2,c3: coeficentes ponderados
-    :return c1 * sc + c2 * conl + c3 * us
-    """
-    rgb = a
-    lab = color.rgb2lab(a)
-    gray = color.rgb2gray(a)
-    l = lab[:,:,0]
+    s = 0
+    w = 1. / (num_x * num_y)
+    for i in range(num_x):
 
-    #1st term
-    chroma = (lab[:,:,1]**2 + lab[:,:,2]**2)**0.5
-    uc = np.mean(chroma)
-    sc = (np.mean((chroma - uc)**2))**0.5
+        xlb = i * blocksize
+        if i < num_x - 1:
+            xrb = (i+1) * blocksize
+        else:
+            xrb = ch.shape[0]
 
-    #2nd term
-    top = np.int(np.round(0.01*l.shape[0]*l.shape[1]))
-    sl = np.sort(l,axis=None)
-    isl = sl[::-1]
-    conl = np.mean(isl[:top])-np.mean(sl[:top])
+        for j in range(num_y):
 
-    #3rd term
-    satur = []
-    chroma1 = chroma.flatten()
-    l1 = l.flatten()
-    for i in range(len(l1)):
-        if chroma1[i] == 0: satur.append(0)
-        elif l1[i] == 0: satur.append(0)
-        else: satur.append(chroma1[i] / l1[i])
+            ylb = j * blocksize
+            if j < num_y - 1:
+                yrb = (j+1) * blocksize
+            else:
+                yrb = ch.shape[1]
+            
+            block = ch[xlb:xrb,ylb:yrb]
+            blockmin = np.float(np.min(block))
+            blockmax = np.float(np.max(block))
 
-    us = np.mean(satur)
+            top = plipsub(blockmax,blockmin)
+            bottom = plipsum(blockmax,blockmin)
 
-    return  c1 * sc + c2 * conl + c3 * us
+            m = top/bottom
+            if m ==0.:
+                s+=0
+            else:
+                s += (m) * np.log(m)
+
+    return plipmult(w,s)
+
+def UIQM(a,p1=0.0282,p2=0.2953,p3=3.5753):
+	"""
+	REF: K. Panetta, C. Gao and S. Agaian, Human-Visual-System-Inspired Underwater Image Quality Measures, 
+	in IEEE Journal of Oceanic Engineering, vol. 41, no. 3, pp. 541-551, July 2016, doi: 10.1109/JOE.2015.2469915.
+
+	Metrica sem referencia, semelhante a UCIQE, mas mais atual. Leva em consideração a medida de colorção,
+	medida de nitidez e medida de contraste.
+	"""
+	#1st term UICM
+	#TαL=⌈αLK⌉ - > o inteiro mais próximo maior ou igual a αLK
+	#TαR=⌊αRK⌋ - > o inteiro mais próximo menor ou igual a αRK
+	rgb=a
+	gray = color.rgb2gray(a)
+	rg = rgb[:,:,0] - rgb[:,:,1]
+	yb = (rgb[:,:,0] + rgb[:,:,1]) / 2 - rgb[:,:,2]
+	rgl = np.sort(rg,axis=None)
+	ybl = np.sort(yb,axis=None)
+	al1 = 0.1
+	al2 = 0.1
+	T1 = np.int(al1 * len(rgl))
+	T2 = np.int(al2 * len(rgl))
+	rgl_tr = rgl[T1:-T2]
+	ybl_tr = ybl[T1:-T2]
+
+	urg = np.mean(rgl_tr) # μ^2_α,RG
+	s2rg = np.mean((rgl_tr - urg) ** 2)  # σ2α,RG
+	uyb = np.mean(ybl_tr) # μ^2_α,YB
+	s2yb = np.mean((ybl_tr- uyb) ** 2) # σ2α,YB
+
+	uicm =-0.0268 * np.sqrt(urg**2 + uyb**2) + 0.1586 * np.sqrt(s2rg + s2yb)
+
+	#2nd term UISM (k1k2=8x8)   # medida de nitidez de imagem
+	"""Para medir a nitidez nas bordas, o detector de bordas Sobel é aplicado primeiro em cada componente de cor RGB
+	   O mapa de arestas resultante é então multiplicado pela imagem original para obter o mapa de arestas em tons de cinza."""
+	# Rsobel = rgb[:,:,0] * filters.sobel(rgb[:,:,0]) 
+	# Gsobel = rgb[:,:,1] * filters.sobel(rgb[:,:,1])
+	# Bsobel = rgb[:,:,2] * filters.sobel(rgb[:,:,2])
+
+	# Rsobel=np.round(Rsobel).astype(np.uint8)  # Arredonda a matriz para numeros inteiros
+	# Gsobel=np.round(Gsobel).astype(np.uint8)
+	# Bsobel=np.round(Bsobel).astype(np.uint8)
+
+	Reme = eme(a,8,8)
+	Geme = eme(a,8,8)
+	Beme = eme(a,8,8)
+	uism = 0.299 * Reme + 0.587 * Geme + 0.114 * Beme
+
+	#3rd term UIConM
+	uiconm = logamee(gray)
+	uiqm = p1 * uicm + p2 * uism + p3 * uiconm
+
+	return uiqm	
+
