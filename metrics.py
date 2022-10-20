@@ -365,3 +365,44 @@ def UIQM(a,p1=0.0282,p2=0.2953,p3=3.5753):
 
 	return uiqm	
 
+def CCF(imageRGB):
+	"""REF:
+	@article{WANG2018904,
+	title = {An imaging-inspired no-reference underwater color image quality assessment metric},
+	journal = {Computers & Electrical Engineering},
+	volume = {70},
+	pages = {904-913},
+	year = {2018},
+	issn = {0045-7906},
+	doi = {https://doi.org/10.1016/j.compeleceng.2017.12.006},
+	url = {https://www.sciencedirect.com/science/article/pii/S0045790617324953},
+	author = {Yan Wang and Na Li and Zongying Li and Zhaorui Gu and Haiyong Zheng and Bing Zheng and Mengnan Sun},
+	keywords = {No-reference image quality assessment, Underwater imaging, Underwater image, Underwater color image quality},
+	abstract = {Underwater color image quality assessment (IQA) plays an important role in analysis and applications of underwater imaging as well as image processing algorithms. This paper presents a new metric inspired by the imaging analysis on underwater absorption and scattering characteristics, dubbed the CCF. This metric is feature-weighted with a combination of colorfulness index, contrast index and fog density index, which can quantify the color loss caused by absorption, the blurring caused by forward scattering and the foggy caused by backward scattering, respectively. Then multiple linear regression is used to calculate three weighted coefficients. A new underwater image database is built to illustrate the performance of the proposed metric. Experimental results show a strong correlation between the proposed metric and mean opinion score (MOS). The proposed CCF metric outperforms many of the leading atmospheric IQA metrics, and it can effectively assess the performance of underwater image enhancement and image restoration methods.}
+	}
+	
+	Métrica sem referência. Essa métrica é ponderada por recursos com uma combinação de índice de colorido, 
+	índice de contraste e índice de densidade de neblina, que pode quantificar a perda de cor 
+	causada pela absorção, o desfoque causado pela dispersão para frente e o nevoeiro causado 
+	pela dispersão para trás, respectivamente.
+	"""
+	rgb=imageRGB
+	gray = color.rgb2gray(imageRGB)
+	# Passo 1
+	Rij=np.log(rgb[:,:,0])-np.mean(rgb[:,:,0])
+	Gij=np.log(rgb[:,:,1])-np.mean(rgb[:,:,1])	
+	Bij=np.log(rgb[:,:,2])-np.mean(rgb[:,:,2])
+
+	# Passo 2
+	a = rgb[:,:,0] - rgb[:,:,1]
+	b = (rgb[:,:,0] + rgb[:,:,1]) / 2 - rgb[:,:,2]
+	
+	var_a  = np.var(a)
+	var_b  = np.var(b)
+	mean_a = np.mean(a)
+	mean_b = np.mean(b)
+
+	ccf=(math.sqrt(var_a+var_b)+0.3*math.sqrt(var_a+var_b)) /85.59
+	
+
+	return ccf
