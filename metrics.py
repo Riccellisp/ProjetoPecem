@@ -42,7 +42,7 @@ def AMBE(imageA, imageB):
 def eme(img,rowSample,columnSample):
 	
 	grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
+	
 	rowSize, columnSize = grayImg.shape
 	nRows = int(rowSize/rowSample)
 	nColumns = int(columnSize/columnSample)
@@ -53,7 +53,7 @@ def eme(img,rowSample,columnSample):
 	nBlocks = nRows*nColumns
 	for i in range(0,nRows):
 		for j in range(0,nColumns):
-			imax=0
+			imax=1
 			imin=255
 			for x in range(i*rowSample,(i+1)*rowSample):
 				for y in range(j*columnSample,(j+1)*columnSample):
@@ -68,7 +68,7 @@ def eme(img,rowSample,columnSample):
 
 	if incompleteColumn==1:
 		for i in range(0,nRows):
-			imax=0
+			imax=1
 			imin=255
 			for x in range(i*rowSample,(i+1)*rowSample):
 				for y in range(nColumns*columnSample,columnSize):
@@ -83,7 +83,7 @@ def eme(img,rowSample,columnSample):
 			nBlocks = nBlocks + 1
 	if incompleteRow==1:
 		for j in range(0,nColumns):
-			imax=0
+			imax=1
 			imin=255
 			for x in range(nRows*rowSample,rowSize):
 				for y in range(j*columnSample,(j+1)*columnSample):
@@ -97,7 +97,7 @@ def eme(img,rowSample,columnSample):
 				somatory = somatory + 20*math.log(imax/imin)
 			nBlocks = nBlocks + 1
 	if incompleteRow==1 and incompleteColumn==1:
-		imax=0
+		imax=1
 		imin=255
 		for x in range(nRows*rowSample,rowSize):
 			for y in range(nColumns*columnSize,columnSize):
@@ -132,7 +132,7 @@ def emee(img,rowSample,columnSample):
 	nBlocks = nRows*nColumns
 	for i in range(0,nRows):
 		for j in range(0,nColumns):
-			imax=0
+			imax=1
 			imin=255
 			for x in range(i*rowSample,(i+1)*rowSample):
 				for y in range(j*columnSample,(j+1)*columnSample):
@@ -147,7 +147,7 @@ def emee(img,rowSample,columnSample):
 
 	if incompleteColumn==1:
 		for i in range(0,nRows):
-			imax=0
+			imax=1
 			imin=255
 			for x in range(i*rowSample,(i+1)*rowSample):
 				for y in range(nColumns*columnSample,columnSize):
@@ -162,7 +162,7 @@ def emee(img,rowSample,columnSample):
 			nBlocks = nBlocks + 1
 	if incompleteRow==1:
 		for j in range(0,nColumns):
-			imax=0
+			imax=1
 			imin=255
 			for x in range(nRows*rowSample,rowSize):
 				for y in range(j*columnSample,(j+1)*columnSample):
@@ -176,7 +176,7 @@ def emee(img,rowSample,columnSample):
 				somatory = somatory + imax/imin*math.log(imax/imin)
 			nBlocks = nBlocks + 1
 	if incompleteRow==1 and incompleteColumn==1:
-		imax=0
+		imax=1
 		imin=255
 		for x in range(nRows*rowSample,rowSize):
 			for y in range(nColumns*columnSize,columnSize):
