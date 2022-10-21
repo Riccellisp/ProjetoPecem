@@ -224,6 +224,14 @@ def IEM(imageA, imageB):
 
 	return valB/valA
 
+def variance_of_laplacian(image):
+	'''
+	compute the Laplacian of the image and then return the focus
+	measure, which is simply the variance of the Laplacian
+	''' 
+	return cv2.Laplacian(image, cv2.CV_64F).var()
+
+
 def UCIQE(a,c1=0.4680,c2 = 0.2745,c3 = 0.2576):
 	"""
 	Underwater colour image quality evaluation metric (UCIQE) é uma métrica baseada na combinação
