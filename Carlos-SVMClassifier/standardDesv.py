@@ -1,13 +1,6 @@
 import cv2
-import numpy
+import numpy as np
 import math
-
-def std(test_list):
-	if len(test_list)==0:
-		return 0
-	mean = sum(test_list) / len(test_list)
-	variance = sum([((x - mean) ** 2) for x in test_list]) / len(test_list)
-	return variance ** 0.5
 
 def standardDesv(img,rowSample,columnSample):
 	
@@ -21,36 +14,46 @@ def standardDesv(img,rowSample,columnSample):
 
 	somatory = 0
 	nBlocks = nRows*nColumns
-	sampleList=[]
+
 	for i in range(0,nRows):
 		for j in range(0,nColumns):
-			sampleList.clear()
-			for x in range(i*rowSample,(i+1)*rowSample):
-				for y in range(j*columnSample,(j+1)*columnSample):
-					sampleList.append(grayImg[x,y])
-			somatory=somatory+std(sampleList)
-
+			somatory=somatory+np.std(grayImg[i*rowSample:(i+1)*rowSample,j*columnSample:(j+1)*rowSample])
 	if incompleteColumn==1:
 		for i in range(0,nRows):
-			sampleList.clear()
-			for x in range(i*rowSample,(i+1)*rowSample):
-				for y in range(nColumns*columnSample,columnSize):
-					sampleList.append(grayImg[x,y])
-			somatory=somatory+std(sampleList)
+			somatory=somatory+np.std(grayImg[i*rowSample:(i+1)*rowSample,nColumns*columnSample:columnSize])
 			nBlocks = nBlocks + 1
 	if incompleteRow==1:
 		for j in range(0,nColumns):
-			sampleList.clear()
-			for x in range(nRows*rowSample,rowSize):
-				for y in range(j*columnSample,(j+1)*columnSample):
-					sampleList.append(grayImg[x,y])
-			somatory=somatory+std(sampleList)
+			somatory=somatory+np.std(grayImg[grayImg[nRows*rowSample:rowSize,j*columnSample:(j+1)*columnSample]])
 			nBlocks = nBlocks + 1
 	if incompleteRow==1 and incompleteColumn==1:
-		sampleList.clear()
-		for x in range(nRows*rowSample,rowSize):
-			for y in range(nColumns*columnSize,columnSize):
-				sampleList.append(grayImg[x,y])
-		somatory=somatory+std(sampleList)
+		somatory=somatory+np.std(grayImg[nRows*rowSample:rowSize,nColumns*columnSample:columnSize])
+		nBlocks = nBlocks + 1
+	return somatory/nBlocks
+
+def stdSpecial(img,rowSample,columnSample):
+	hsvImg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+	rowSize, columnSize, channel = hsvImg.shape
+	nRows = int(rowSize/rowSample)
+	nColumns = int(columnSize/columnSample)
+	incompleteRow = math.ceil(rowSize/rowSample) - nRows
+	incompleteColumn = math.ceil(columnSize/columnSample) - nColumns
+
+	somatory = 0
+	nBlocks = nRows*nColumns
+
+	for i in range(0,nRows):
+		for j in range(0,nColumns):
+			somatory=somatory+np.std(hsvImg[i*rowSample:(i+1)*rowSample,j*columnSample:(j+1)*rowSample,1])
+	if incompleteColumn==1:
+		for i in range(0,nRows):
+			somatory=somatory+np.std(hsvImg[i*rowSample:(i+1)*rowSample,nColumns*columnSample:columnSize,1])
+			nBlocks = nBlocks + 1
+	if incompleteRow==1:
+		for j in range(0,nColumns):
+			somatory=somatory+np.std(hsvImg[nRows*rowSample:rowSize,j*columnSample:(j+1)*columnSample,1])
+			nBlocks = nBlocks + 1
+	if incompleteRow==1 and incompleteColumn==1:
+		somatory=somatory+np.std(hsvImg[nRows*rowSample:rowSize,nColumns*columnSample:columnSize,1])
 		nBlocks = nBlocks + 1
 	return somatory/nBlocks

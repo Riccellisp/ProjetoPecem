@@ -10,8 +10,9 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import random
-from standardDesv import standardDesv
+from standardDesv import standardDesv,stdSpecial
 from tabulate import tabulate
+import math
 
 def variance_of_laplacian(image):
 	'''
@@ -20,11 +21,42 @@ def variance_of_laplacian(image):
 	''' 
 	return cv2.Laplacian(image, cv2.CV_64F).var()
 
+def laplacian_modified(image,rowSample,columnSample):
+	grayImg = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	
+	rowSize, columnSize = grayImg.shape
+	nRows = int(rowSize/rowSample)
+	nColumns = int(columnSize/columnSample)
+	incompleteRow = math.ceil(rowSize/rowSample) - nRows
+	incompleteColumn = math.ceil(columnSize/columnSample) - nColumns
+
+	somatory = 0
+	nBlocks = nRows*nColumns
+	for i in range(0,nRows):
+		for j in range(0,nColumns):
+			parameter=cv2.Laplacian(grayImg[i*rowSample:(i+1)*rowSample,j*columnSample:(j+1)*rowSample],cv2.CV_64F).var()
+			somatory=somatory+parameter
+	if incompleteColumn==1:
+		for i in range(0,nRows):
+			parameter=cv2.Laplacian(grayImg[i*rowSample:(i+1)*rowSample,nColumns*columnSample:columnSize],cv2.CV_64F).var()
+			somatory=somatory+parameter
+			nBlocks = nBlocks + 1
+	if incompleteRow==1:
+		for j in range(0,nColumns):
+			parameter=cv2.Laplacian(grayImg[nRows*rowSample:rowSize,j*columnSample:(j+1)*columnSample],cv2.CV_64F).var()
+			somatory=somatory+parameter
+			nBlocks = nBlocks + 1
+	if incompleteRow==1 and incompleteColumn==1:
+		parameter=cv2.Laplacian(grayImg[nRows*rowSample:rowSize,nColumns*columnSample:columnSize],cv2.CV_64F).var()
+		somatory=somatory+parameter
+		nBlocks = nBlocks + 1
+	return somatory/nBlocks
+
 def metric(image):
-	return standardDesv(image,20,20)
+	return stdSpecial(image,3,3)
 
 def SVMClassifier():
-
+	print('(3,3)')
 	pathDatabase=os.getcwd()+'\\dataset_pecem'
 	pathExcelente=pathDatabase+'\\Excelente'
 	pathBom=pathDatabase+'\\Bom'
@@ -102,7 +134,7 @@ def SVMClassifier():
 	tabela=np.zeros((n_classes,n_classes))
 	for i in range(0,1000):
 		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
-		clf = SVC(kernel='poly',class_weight='balanced')
+		clf = SVC(kernel='linear',class_weight='balanced')
 		clf.fit(X_train, y_train)
 		predictions = clf.predict(X_test)
 		sum=sum+accuracy_score(y_test, predictions)
@@ -118,7 +150,7 @@ def SVMClassifier():
 	print("Average accurary=",avg_accuracy)
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 
-	clf = SVC(kernel='poly',class_weight='balanced')
+	clf = SVC(kernel='linear',class_weight='balanced')
 	clf.fit(X_train, y_train)
 
 	predictions = clf.predict(X_test)

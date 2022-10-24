@@ -53,23 +53,28 @@ def SVMClassifier(L1,L2):
 		parameters_ruim=[]
 		parameters_pessimo=[]
 
+		print("Excelentes:")
 		for path in list_excelente:
 			img=cv2.imread(path)
 			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
+			print(path,':',parameter)
 			parameters_excelente.append(parameter)
-
+		print("Bons:")
 		for path in list_bom:
 			img=cv2.imread(path)
 			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
+			print(path,':',parameter)
 			parameters_bom.append(parameter)
-
+		print("Ruins:")
 		for path in list_ruim:
 			img=cv2.imread(path)
 			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
+			print(path,':',parameter)
 			parameters_ruim.append(parameter)
-
+		print("Pessimos:")
 		for path in list_pessimo:
 			img=cv2.imread(path)
+			print(path,':',parameter)
 			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
 			parameters_pessimo.append(parameter)
 
@@ -113,6 +118,7 @@ def SVMClassifier(L1,L2):
 	#tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
 	tabela=np.append([['Péssimo ou Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 	tabela=np.append([['Predição\Realidade','Péssimo ou Ruim','Bom','Excelente']],tabela,axis=0)
+	print(tabela)
 	avg_accuracy=sum/10000
 	print("Average accurary=",avg_accuracy)
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
@@ -133,7 +139,7 @@ def SVMClassifier(L1,L2):
 		y_visual.append(-(w[0] / w[1]) * x_visual[i] - b / w[1])
 	'''
 
-
+	
 	colormap=[]
 	for i in y_train:
 		if i==0:
@@ -148,22 +154,28 @@ def SVMClassifier(L1,L2):
 	#class_legend=[["Péssimo","red"],["Ruim","orange"],["Bom","green"],["Excelente","blue"]]
 	class_legend=[["Péssimo ou Ruim","red"],["Bom","orange"],["Excelente","green"]]
 
+	#ax=plt.axes(projection="3d")
+
 	for item in class_legend:
+		#ax.scatter3D([],[],[],c=item[1],label=item[0])
 		plt.scatter([],[],c=item[1],label=item[0])
 	plt.legend()
 
 
 	plt.title(title)
 
+
+	#ax.scatter3D(X_train[:,0],X_train[:,1],X_train[:,2],c=colormap)
 	plt.scatter(X_train[:,0],X_train[:,1],c=colormap)
 
 	#for i in range (0,n_classes-1):
 		#plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
 	plt.legend()
 	print(tabela)
-	plt.savefig(title)
+	#plt.savefig(title)
 	plt.show()
-	np.savetxt('matriz_confusao\\Fase_2\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	#np.savetxt('matriz_confusao\\Fase_2\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	
 
 SVMClassifier(10,20)
 
