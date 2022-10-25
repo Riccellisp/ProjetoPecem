@@ -28,15 +28,15 @@ def rmse(img1,img2):
 	meanSqrtError = np.mean(sqrtError)
 	return math.sqrt(meanSqrtError)
 
-def laplacian_modified(image,rowSample,columnSample):
-	return variance_of_laplacian(image) - variance_of_laplacian(cv2.GaussianBlur(image,(rowSample,columnSample),0))
+def laplacian(image,rowSample,columnSample):
+	return np.mean(cv2.Laplacian(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), cv2.CV_64F,ksize=15))
 
 def standardDesvUpgraded(img,L1,L2):
 	return standardDesv(img,L1,L2)/standardDesv(cv2.GaussianBlur(img, (5,5), 5),L1,L2)
 
 def metric(image):
 	#return laplacian_modified(image,31,31)
-	return rmse(image,cv2.GaussianBlur(image, (31,31), 0))
+	return laplacian(image,15,15)
 
 def SVMClassifier():
 	print('(3,3)')

@@ -9,35 +9,40 @@ pathBom=pathDatabase+'\\Bom'
 pathRuim=pathDatabase+'\\Ruim'
 pathPessimo=pathDatabase+'\\Pessimo'
 
-list_files=[]
-parameters=[]
-
+tabela=[]
+dtype=[('path',np.unicode_, 200),('metric',float)]
 for root, dirs, files in os.walk(pathExcelente):
 	for file in files:
-		list_files.append(os.path.join(root,file))
+		path=os.path.join(root,file)
+		img=cv2.imread(path)
+		tabela.append((path,rmse(img,cv2.GaussianBlur(img,(31,31),0))))
 
 for root, dirs, files in os.walk(pathBom):
 	for file in files:
-		list_files.append(os.path.join(root,file))
+		path=os.path.join(root,file)
+		img=cv2.imread(path)
+		tabela.append((path,rmse(img,cv2.GaussianBlur(img,(31,31),0))))
 
 for root, dirs, files in os.walk(pathRuim):
 	for file in files:
-		list_files.append(os.path.join(root,file))
+		path=os.path.join(root,file)
+		img=cv2.imread(path)
+		tabela.append((path,rmse(img,cv2.GaussianBlur(img,(31,31),0))))
 
 for root, dirs, files in os.walk(pathPessimo):
 	for file in files:
-		list_files.append(os.path.join(root,file))
+		path=os.path.join(root,file)
+		img=cv2.imread(path)
+		tabela.append((path,rmse(img,cv2.GaussianBlur(img,(31,31),0))))
 
-for i in range(0,len(list_files)):
-	img=cv2.imread(list_files[i])
-	parameters.append(rmse(img,cv2.GaussianBlur(img,(31,31),0)))
-
-
-tabela=np.array((list_files,parameters))
-sort_tabela=np.sort(tabela,axis=-1)
+matriz=np.array(tabela,dtype=dtype)
+print(matriz)
+sort_matriz=np.sort(matriz,order='metric')
 count=1
-print(sort_tabela[0][:])
-for path in sort_tabela[0][:]:
+print(sort_matriz)
+for element in sort_matriz:
+	path,value=element
+	#print(element)
 	img=cv2.imread(path)
-	cv2.imwrite('\\dataset_sorted\\Noise rank '+str(count)+'.jpg',img)
+	cv2.imwrite('Noise rank '+str(count)+'.jpg',img)
 	count=count+1
