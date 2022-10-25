@@ -10,12 +10,49 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import random
-from standardDesv import standardDesv
+from standardDesv import standardDesv,stdSpecial,emeSpecial,rmse
 from tabulate import tabulate
+
+def IEM_filter(image):
+	image = image.astype(np.float32)
+
+	(iH, iW) = image.shape[:2]
+	output = np.zeros((iH-2, iW-2), dtype="float32")
+
+	for y in np.arange(0, iH-2):
+		for x in np.arange(0, iW-2):
+
+			roi = image[y:y + 3, x:x + 3]
+
+			k = roi
+			k = (np.abs(k[1][1] - k[0][0]) + np.abs(k[1][1] - k[0][1]) + np.abs(k[1][1] - k[0][2]) +
+				np.abs(k[1][1] - k[1][0]) + np.abs(k[1][1] - k[1][2]) +
+				np.abs(k[1][1] - k[2][0]) + np.abs(k[1][1] - k[2][1]) + np.abs(k[1][1] - k[2][2]))  
+
+			output[y, x] = k
+	return np.sum(output)
+
+def IEM(imageA, imageB):
+	'''
+	Image Enhancement Metric(IEM) approximates the contrast and
+	sharpness of an image by dividing an image into non-overlapping
+	blocks. 
+
+	imageA is the raw image (before histogram equalization per example), and imageB 
+	is the image after preprocessing
+	'''
+	valA = IEM_filter(imageA)
+	valB = IEM_filter(imageB)
+
+	return valB/valA
+
+def ANC(image,L1,L2):#Artificial Noise Comparison
+	return [rmse(image,cv2.GaussianBlur(image,(L1*2+1,L1*2+1),0)),rmse(image,cv2.GaussianBlur(image,(L2*2+1,L2*2+1),0))]
 
 def SVMClassifier(L1,L2):
 
-	title="EME("+str(L1)+","+str(L1)+") Std("+str(L2)+","+str(L2)+")"
+	#title="EME("+str(L1)+","+str(L1)+") Std("+str(L2)+","+str(L2)+")"
+	title='Test11'
 
 	if os.path.exists('dataset_cache\\'+title+'.txt'):
 		with open('dataset_cache\\'+title+'.txt','rb') as f:
@@ -56,26 +93,26 @@ def SVMClassifier(L1,L2):
 		print("Excelentes:")
 		for path in list_excelente:
 			img=cv2.imread(path)
-			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
+			parameter=ANC(img,L1,L1)
 			print(path,':',parameter)
 			parameters_excelente.append(parameter)
 		print("Bons:")
 		for path in list_bom:
 			img=cv2.imread(path)
-			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
+			parameter=ANC(img,L1,L1)
 			print(path,':',parameter)
 			parameters_bom.append(parameter)
 		print("Ruins:")
 		for path in list_ruim:
 			img=cv2.imread(path)
-			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
+			parameter=ANC(img,L1,L1)
 			print(path,':',parameter)
 			parameters_ruim.append(parameter)
 		print("Pessimos:")
 		for path in list_pessimo:
 			img=cv2.imread(path)
+			parameter=ANC(img,L1,L1)
 			print(path,':',parameter)
-			parameter=[eme(img,L1,L1),standardDesv(img,L2,L2)]
 			parameters_pessimo.append(parameter)
 
 		X_excelente = np.asarray(parameters_excelente)
@@ -106,7 +143,7 @@ def SVMClassifier(L1,L2):
 	tabela=np.zeros((n_classes,n_classes))
 	for i in range(0,10000):
 		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
-		clf = SVC(kernel='poly',class_weight='balanced')
+		clf = SVC(kernel='linear',class_weight='balanced')
 		clf.fit(X_train, y_train)
 		predictions = clf.predict(X_test)
 		sum=sum+accuracy_score(y_test, predictions)
@@ -123,7 +160,7 @@ def SVMClassifier(L1,L2):
 	print("Average accurary=",avg_accuracy)
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 
-	clf = SVC(kernel='poly',class_weight='balanced')
+	clf = SVC(kernel='linear',class_weight='balanced')
 	clf.fit(X_train, y_train)
 
 	predictions = clf.predict(X_test)
@@ -131,17 +168,17 @@ def SVMClassifier(L1,L2):
 	x_visual=[]
 	y_visual=[]
 
-	'''
+	
 	for i in range (0,n_classes-1):
 		w=clf.coef_[i]
 		b=clf.intercept_[i]
-		x_visual.append(np.linspace(X_train.max(0)[0],X_train.min(0)[0]))
+		x_visual.append(np.linspace(X.max(0)[0],X.min(0)[0]))
 		y_visual.append(-(w[0] / w[1]) * x_visual[i] - b / w[1])
-	'''
+	
 
 	
 	colormap=[]
-	for i in y_train:
+	for i in Y:
 		if i==0:
 			colormap.append('red')
 		elif i==1:
@@ -166,10 +203,10 @@ def SVMClassifier(L1,L2):
 
 
 	#ax.scatter3D(X_train[:,0],X_train[:,1],X_train[:,2],c=colormap)
-	plt.scatter(X_train[:,0],X_train[:,1],c=colormap)
+	plt.scatter(X[:,0],X[:,1],c=colormap)
 
-	#for i in range (0,n_classes-1):
-		#plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
+	for i in range (0,n_classes-1):
+		plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
 	plt.legend()
 	print(tabela)
 	#plt.savefig(title)
@@ -177,5 +214,5 @@ def SVMClassifier(L1,L2):
 	#np.savetxt('matriz_confusao\\Fase_2\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
 	
 
-SVMClassifier(10,20)
+SVMClassifier(15,15)
 
