@@ -47,12 +47,12 @@ def IEM(imageA, imageB):
 	return valB/valA
 
 def ANC(image,L1,L2):#Artificial Noise Comparison
-	return [rmse(image,cv2.GaussianBlur(image,(L1*2+1,L1*2+1),0)),rmse(image,cv2.GaussianBlur(image,(L2*2+1,L2*2+1),0))]
+	return [0,rmse(image,cv2.GaussianBlur(image,(L1*2+1,L1*2+1),0))]
 
 def SVMClassifier(L1,L2):
 
 	#title="EME("+str(L1)+","+str(L1)+") Std("+str(L2)+","+str(L2)+")"
-	title='Test11'
+	title='Test16'
 
 	if os.path.exists('dataset_cache\\'+title+'.txt'):
 		with open('dataset_cache\\'+title+'.txt','rb') as f:
@@ -138,7 +138,6 @@ def SVMClassifier(L1,L2):
 		elif dataset[1][i]==3:
 			dataset[1][i]=2
 	n_classes=3
-	print(dataset[1])
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
 	for i in range(0,10000):
@@ -155,7 +154,6 @@ def SVMClassifier(L1,L2):
 	#tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
 	tabela=np.append([['Péssimo ou Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 	tabela=np.append([['Predição\Realidade','Péssimo ou Ruim','Bom','Excelente']],tabela,axis=0)
-	print(tabela)
 	avg_accuracy=sum/10000
 	print("Average accurary=",avg_accuracy)
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
@@ -164,21 +162,23 @@ def SVMClassifier(L1,L2):
 	clf.fit(X_train, y_train)
 
 	predictions = clf.predict(X_test)
-
+	
 	x_visual=[]
 	y_visual=[]
 
-	
 	for i in range (0,n_classes-1):
 		w=clf.coef_[i]
 		b=clf.intercept_[i]
-		x_visual.append(np.linspace(X.max(0)[0],X.min(0)[0]))
-		y_visual.append(-(w[0] / w[1]) * x_visual[i] - b / w[1])
+		if w[0]==0:
+			x_visual.append(np.linspace(-1,1))	
+		else:
+			x_visual.append(np.linspace(dataset[0].max(0)[0],dataset[0].min(0)[0]))
+		y_visual.append(-(w[0] / w[1]) * x_visual[0] - b / w[1])
 	
 
 	
 	colormap=[]
-	for i in Y:
+	for i in dataset[1]:
 		if i==0:
 			colormap.append('red')
 		elif i==1:
@@ -203,12 +203,12 @@ def SVMClassifier(L1,L2):
 
 
 	#ax.scatter3D(X_train[:,0],X_train[:,1],X_train[:,2],c=colormap)
-	plt.scatter(X[:,0],X[:,1],c=colormap)
+	plt.scatter(dataset[0][:,0],dataset[0][:,1],c=colormap)
 
 	for i in range (0,n_classes-1):
 		plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
 	plt.legend()
-	print(tabela)
+	print(tabulate(tabela))
 	#plt.savefig(title)
 	plt.show()
 	#np.savetxt('matriz_confusao\\Fase_2\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
