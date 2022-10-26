@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import pickle
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import accuracy_score
 import random
 from tabulate import tabulate
@@ -87,15 +88,19 @@ n_classes=2
 sum=0
 tabela=np.zeros((2,2))
 
-for i in range(0,100):
+for i in range(0,500):
     X_train, X_test, y_train, y_test = train_test_split(X, Y)
     X_train_1,X_val,y_train_1,y_val = train_test_split(X_train, y_train)
     parametros = {'C':[1, 10, 20],'kernel':['rbf', 'poly','sigmoid']}
     resultGrid = gridsearchSVM(parametros, X_train_1,y_train_1,X_val, y_val) 
     print(resultGrid)
     clf = SVC(kernel=resultGrid['kernel'], C=resultGrid['C'])
-
+    
+    scaler = MinMaxScaler()
+    X_train = scaler.fit_transform(X_train)
+    
     clf.fit(X_train, y_train)
+    X_test = scaler.transform(X_test)
     predictions = clf.predict(X_test)
     sum=sum+accuracy_score(y_test, predictions)
     for i in range(0,len(predictions)):
@@ -103,7 +108,7 @@ for i in range(0,100):
 
 for i in range(0,n_classes):
 	tabela[i]=tabela[i]/np.sum(tabela[i])
-avg_accuracy=sum/100
+avg_accuracy=sum/500
 print('Average accuracy = ',avg_accuracy)
 header=["Predição\Realidade",'0','1']
 print(tabulate(tabela,headers=header,tablefmt="fancy_grid", showindex="always"))
