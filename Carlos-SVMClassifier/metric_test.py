@@ -129,7 +129,7 @@ def SVMClassifier():
 		for i in range(0,len(predictions)):
 			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
 
-	tabela=tabela/10000
+	tabela=tabela/1000
 	if n_classes==4:
 		tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 		tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
@@ -267,7 +267,7 @@ def NCClassifier():
 	n_classes=3
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
-	for i in range(0,10000):
+	for i in range(0,1000):
 		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 		clf = NearestCentroid()
 		clf.fit(X_train, y_train)
@@ -275,13 +275,13 @@ def NCClassifier():
 		sum=sum+accuracy_score(y_test, predictions)
 		for i in range(0,len(predictions)):
 			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
-	tabela=tabela/10000
+	tabela=tabela/1000
 	#tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 	#tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
 	tabela=np.append([['Péssimo ou Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 	tabela=np.append([['Predição\Realidade','Péssimo ou Ruim','Bom','Excelente']],tabela,axis=0)
-	avg_accuracy=sum/10000
-	print("Average accurary=",avg_accuracy)
+	avg_accuracy=sum/1000
+	print("Average accuracy=",avg_accuracy)
 	print(tabulate(tabela))
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 
