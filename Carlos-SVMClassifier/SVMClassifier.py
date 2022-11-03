@@ -167,9 +167,9 @@ def SVMClassifier():
 		class_legend=[["Péssimo ou Ruim","red"],["Bom","orange"],["Excelente","green"]]
 		np.savetxt('matriz_confusao\\3 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
 	avg_accuracy=sum/1000
-	print("Average accurary=",avg_accuracy)
+	print("Average accuracy=",avg_accuracy)
 	print(tabulate(tabela))
-	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
+	X_train, X_test, y_train, y_test = trai.n_test_split(dataset[0], dataset[1])
 
 	clf = SVC(kernel='linear',class_weight='balanced')
 	clf.fit(X_train, y_train)
