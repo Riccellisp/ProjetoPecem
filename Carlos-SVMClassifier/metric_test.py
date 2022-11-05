@@ -32,14 +32,20 @@ def laplacian(image,rowSample,columnSample):
 	return np.mean(cv2.Laplacian(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), cv2.CV_64F,ksize=15))
 
 def standardDesvUpgraded(img,L1,L2):
-	return standardDesv(img,L1,L2)/standardDesv(cv2.GaussianBlur(img, (5,5), 5),L1,L2)
+	return standardDesv(img,L1,L2)/standardDesv(cv2.GaussianBlur(img, (21,21), 0),L1,L2)
+
+def erroQuadradoMedio(img,R1,R2):
+	return rmse(img,cv2.GaussianBlur(img,(int(R1)*2+1,int(R2)*2+1),0))
 
 def metric(image):
-	#return laplacian_modified(image,31,31)
-	return laplacian(image,15,15)
+	#return variance_of_laplacian(image)
+	#return eme(image,50,50)
+	#return emee(image,50,50)
+	return erroQuadradoMedio(image,50,50)
 
 def SVMClassifier():
-	print('(3,3)')
+	title='Erro Quadrado Médio(50,50)'
+	n_classes=3
 	pathDatabase=os.getcwd()+'\\dataset_pecem'
 	pathExcelente=pathDatabase+'\\Excelente'
 	pathBom=pathDatabase+'\\Bom'
@@ -104,18 +110,17 @@ def SVMClassifier():
 	Y = np.append(Y,np.ones((1,len(parameters_ruim)))*1)
 	Y = np.append(Y,np.ones((1,len(parameters_pessimo)))*0)
 	dataset=[X,Y]
-	'''
-	for i in range(0,len(dataset[1])):
-		if dataset[1][i]==1:
-			dataset[1][i]=0
-		elif dataset[1][i]==2:
-			dataset[1][i]=1
-		elif dataset[1][i]==3:
-			dataset[1][i]=2'''
-	n_classes=4
+	if n_classes==3:
+		for i in range(0,len(dataset[1])):
+			if dataset[1][i]==1:
+				dataset[1][i]=0
+			elif dataset[1][i]==2:
+				dataset[1][i]=1
+			elif dataset[1][i]==3:
+				dataset[1][i]=2
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
-	for i in range(0,10000):
+	for i in range(0,1000):
 		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 		clf = SVC(kernel='linear',class_weight='balanced')
 		clf.fit(X_train, y_train)
@@ -124,12 +129,18 @@ def SVMClassifier():
 		for i in range(0,len(predictions)):
 			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
 
-	tabela=tabela/10000
-	tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
-	tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
-	#tabela=np.append([['Péssimo ou Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
-	#tabela=np.append([['Predição\Realidade','Péssimo ou Ruim','Bom','Excelente']],tabela,axis=0)
-	avg_accuracy=sum/10000
+	tabela=tabela/1000
+	if n_classes==4:
+		tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
+		class_legend=[["Péssimo","red"],["Ruim","orange"],["Bom","green"],["Excelente","blue"]]
+		np.savetxt('matriz_confusao\\4 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	elif n_classes==3:
+		tabela=np.append([['Péssimo ou Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Péssimo ou Ruim','Bom','Excelente']],tabela,axis=0)
+		class_legend=[["Péssimo ou Ruim","red"],["Bom","orange"],["Excelente","green"]]
+		np.savetxt('matriz_confusao\\3 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	avg_accuracy=sum/1000
 	print("Average accurary=",avg_accuracy)
 	print(tabulate(tabela))
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
@@ -142,13 +153,11 @@ def SVMClassifier():
 	x_visual=[]
 	y_visual=[]
 
-	'''
 	for i in range (0,n_classes-1):
 		w=clf.coef_[i]
 		b=clf.intercept_[i]
 		x_visual.append(np.linspace(X_train.max(0)[0],X_train.min(0)[0]))
 		y_visual.append(-(w[0] / w[1]) * x_visual[i] - b / w[1])
-	'''
 
 
 	colormap=[]
@@ -162,8 +171,8 @@ def SVMClassifier():
 		elif i==3:
 			colormap.append('blue')
 
-	#class_legend=[["Péssimo","red"],["Ruim","orange"],["Bom","green"],["Excelente","blue"]]
-	class_legend=[["Péssimo ou Ruim","red"],["Bom","orange"],["Excelente","green"]]
+	
+	
 
 	for item in class_legend:
 		plt.scatter([],[],c=item[1],label=item[0])
@@ -171,12 +180,15 @@ def SVMClassifier():
 
 	plt.scatter(X[:,0],X[:,1],c=colormap)
 
-	#for i in range (0,n_classes-1):
-		#plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
+	for i in range (0,n_classes-1):
+		plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
 	plt.legend()
-	#plt.savefig(title)
+	if(n_classes==4):
+		plt.savefig('Gráfico dispersão\\4 Classes\\'+title+'.png')
+	elif(n_classes==3):
+		plt.savefig('Gráfico dispersão\\3 Classes\\'+title+'.png')
 	plt.show()
-	#np.savetxt('matriz_confusao\\Fase_2\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	
 
 def NCClassifier():
 	print('(3,3)')
@@ -255,7 +267,7 @@ def NCClassifier():
 	n_classes=3
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
-	for i in range(0,10000):
+	for i in range(0,1000):
 		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 		clf = NearestCentroid()
 		clf.fit(X_train, y_train)
@@ -263,13 +275,13 @@ def NCClassifier():
 		sum=sum+accuracy_score(y_test, predictions)
 		for i in range(0,len(predictions)):
 			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
-	tabela=tabela/10000
+	tabela=tabela/1000
 	#tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 	#tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
 	tabela=np.append([['Péssimo ou Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 	tabela=np.append([['Predição\Realidade','Péssimo ou Ruim','Bom','Excelente']],tabela,axis=0)
-	avg_accuracy=sum/10000
-	print("Average accurary=",avg_accuracy)
+	avg_accuracy=sum/1000
+	print("Average accuracy=",avg_accuracy)
 	print(tabulate(tabela))
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 
@@ -281,14 +293,11 @@ def NCClassifier():
 	x_visual=[]
 	y_visual=[]
 
-	'''
 	for i in range (0,n_classes-1):
 		w=clf.coef_[i]
 		b=clf.intercept_[i]
 		x_visual.append(np.linspace(X_train.max(0)[0],X_train.min(0)[0]))
 		y_visual.append(-(w[0] / w[1]) * x_visual[i] - b / w[1])
-	'''
-
 
 	colormap=[]
 	for i in Y:
@@ -301,21 +310,21 @@ def NCClassifier():
 		elif i==3:
 			colormap.append('blue')
 
-	#class_legend=[["Péssimo","red"],["Ruim","orange"],["Bom","green"],["Excelente","blue"]]
-	class_legend=[["Péssimo ou Ruim","red"],["Bom","orange"],["Excelente","green"]]
-
 	for item in class_legend:
 		plt.scatter([],[],c=item[1],label=item[0])
 	plt.legend()
 
 	plt.scatter(X[:,0],X[:,1],c=colormap)
 
-	#for i in range (0,n_classes-1):
-		#plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
+	for i in range (0,n_classes-1):
+		plt.plot(x_visual[i], y_visual[i],c=class_legend[i][1],label=class_legend[i][0]+'/'+class_legend[i+1][0]+' Divisor')
+
 	plt.legend()
 	#plt.savefig(title)
-	plt.show()
-	#np.savetxt('matriz_confusao\\Fase_2\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	if(n_classes==4):
+		plt.savefig('Gráfico dispersão\\4 Classes\\'+title+'.png')
+	if(n_classes==3):
+		plt.savefig('Gráfico dispersão\\3 Classes\\'+title+'.png')
 
-NCClassifier()
+SVMClassifier()
 

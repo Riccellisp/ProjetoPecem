@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Analises</title>
+    <style type='text/css'>
+
+        #container-geral{
+        width: 100%;
+        height: 700px;
+        /* border: 1px solid #000; */
+        display: flex;
+        flex-direction: row;              /*row | row-reverse | column | column-reverse*/
+        /* flex-wrap: wrap;*/             /*wrap |nowrap |wrap-reverse*/
+        justify-content:flex-start;       /*flex-start | flex-end | center | space-between | space-around*/
+        align-items: center;              /*strech | center | flex-start | flex-end | baseline */
+        }
+        
+        #infos{
+        display: flex;
+        background-color: white;
+        width: 100%;
+        /* margin:5px; */
+        height:100%;
+        align-items: center;
+        justify-content: center;
+        /* margin-left: 5px; */
+        border: 1px solid #000;
+        margin-right: 5px;
+        }
+        
+        #img{ 
+        display: flex;
+        width: 40%;
+        border: 1px solid #000; 
+        /* margin:7px; */
+        height:100%;
+        flex-direction: column;
+        align-items: flex-start ;
+        background-color: white;    
+        }
+        
+        #img-original{
+        width: 100%;height:250px;
+        }
+        
+        #elementos-img{
+            padding-top: 10px;
+            display: inline;
+        }
+        p{
+            display: inline;
+            font-size: 22px;
+        }
+        .cam-folder{  
+            display: inline;
+            text-transform: uppercase;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        
+        #img-infos{
+        width: 100%;
+        height:700px;
+        }
+
+        #back{
+        font-size: 22px;
+        font-family:Georgia, 'Times New Roman', Times, serif;
+        text-align:start;
+        padding-top:250px;
+        padding-left: 9px;
+        }
+        /* Referente a tabela */
+        #linha-classes{
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .labels-imagens-text{
+            color:rgb(19, 66, 147);
+        }
+        </style>
+</head>
+<body>
+    <table align="center" id="table" border="0px" cellspacing="0" cellpadding="2px" width="80%" style="padding-bottom: 85px;">
+        <thead id="thead" colspan="8">
+            <tr>
+                <td colspan="8" align="center"><font face="Verdana,Arial,Helvetica,sans-serif" size="5">Tabela de Imagens</font></td>
+            </tr>
+            <tr id="linha-classes">
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Bom Diurno</font></td>
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Bom Noturno</font></td>
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Excelente Diurno</font></td>
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Excelente Noturno</font></td>
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Pessimo Diurno</font></td>
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Pessimo Noturno</font></td>
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Ruim Diurno</font></td>
+                <td align="center"><font face="Verdana,Arial,Helvetica,sans-serif" >Ruim Noturno</font></td>
+                
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+
+    <script type="text/javascript" scr="channel_analyze/js/script.js">
+        var img_paths=['dataset_pecem\\cam_124_1\\Bom\\Imagem21.jpg','dataset_pecem\\cam_124_1\\Bom\\Imagem22.jpg','dataset_pecem\\cam_124_1\\Excelente\\Imagem19.jpg','dataset_pecem\\cam_124_1\\Excelente\\Imagem20.jpg','dataset_pecem\\cam_124_1\\Pessimo\\Imagem25.jpg','dataset_pecem\\cam_124_1\\Pessimo\\Imagem26.jpg','dataset_pecem\\cam_124_1\\Ruim\\Imagem23.jpg','dataset_pecem\\cam_124_1\\Ruim\\Imagem24.jpg','dataset_pecem\\cam_321\\Bom\\Imagem29.jpg','dataset_pecem\\cam_321\\Bom\\Imagem30.jpg','dataset_pecem\\cam_321\\Excelente\\Imagem27.jpg','dataset_pecem\\cam_321\\Excelente\\Imagem28.jpg','dataset_pecem\\cam_321\\Pessimo\\Imagem33.jpg','dataset_pecem\\cam_321\\Pessimo\\Imagem34.jpg','dataset_pecem\\cam_321\\Ruim\\Imagem31.jpg','dataset_pecem\\cam_321\\Ruim\\Imagem32.jpg','dataset_pecem\\cam_323\\Bom\\Imagem37.jpg','dataset_pecem\\cam_323\\Bom\\Imagem38.jpg','dataset_pecem\\cam_323\\Excelente\\Imagem35.jpg','dataset_pecem\\cam_323\\Excelente\\Imagem36.jpg','dataset_pecem\\cam_323\\Pessimo\\Imagem41.jpg','dataset_pecem\\cam_323\\Pessimo\\Imagem42.jpg','dataset_pecem\\cam_323\\Ruim\\Imagem39.jpg','dataset_pecem\\cam_323\\Ruim\\Imagem40.jpg','dataset_pecem\\cam_50\\Bom\\Imagem5.jpg','dataset_pecem\\cam_50\\Bom\\Imagem6.jpg','dataset_pecem\\cam_50\\Excelente\\Imagem1.jpg','dataset_pecem\\cam_50\\Excelente\\Imagem2.jpg','dataset_pecem\\cam_50\\Pessimo\\Imagem09.jpg','dataset_pecem\\cam_50\\Pessimo\\Imagem10.jpg','dataset_pecem\\cam_50\\Ruim\\Imagem7.jpg','dataset_pecem\\cam_50\\Ruim\\Imagem8.jpg','dataset_pecem\\cam_77_3\\Bom\\Imagem13.jpg','dataset_pecem\\cam_77_3\\Bom\\Imagem14.jpg','dataset_pecem\\cam_77_3\\Excelente\\Imagem11.jpg','dataset_pecem\\cam_77_3\\Excelente\\Imagem12.jpg','dataset_pecem\\cam_77_3\\Pessimo\\Imagem17.jpg','dataset_pecem\\cam_77_3\\Pessimo\\Imagem18.jpg','dataset_pecem\\cam_77_3\\Ruim\\Imagem15.jpg','dataset_pecem\\cam_77_3\\Ruim\\Imagem16.jpg']
+        var infos_paths=['channel_analyze\\infos\\cam_124_1\\Bom\\infos_Imagem21.png','channel_analyze\\infos\\cam_124_1\\Bom\\infos_Imagem22.png','channel_analyze\\infos\\cam_124_1\\Excelente\\infos_Imagem19.png','channel_analyze\\infos\\cam_124_1\\Excelente\\infos_Imagem20.png','channel_analyze\\infos\\cam_124_1\\Pessimo\\infos_Imagem25.png','channel_analyze\\infos\\cam_124_1\\Pessimo\\infos_Imagem26.png','channel_analyze\\infos\\cam_124_1\\Ruim\\infos_Imagem23.png','channel_analyze\\infos\\cam_124_1\\Ruim\\infos_Imagem24.png','channel_analyze\\infos\\cam_321\\Bom\\infos_Imagem29.png','channel_analyze\\infos\\cam_321\\Bom\\infos_Imagem30.png','channel_analyze\\infos\\cam_321\\Excelente\\infos_Imagem27.png','channel_analyze\\infos\\cam_321\\Excelente\\infos_Imagem28.png','channel_analyze\\infos\\cam_321\\Pessimo\\infos_Imagem33.png','channel_analyze\\infos\\cam_321\\Pessimo\\infos_Imagem34.png','channel_analyze\\infos\\cam_321\\Ruim\\infos_Imagem31.png','channel_analyze\\infos\\cam_321\\Ruim\\infos_Imagem32.png','channel_analyze\\infos\\cam_323\\Bom\\infos_Imagem37.png','channel_analyze\\infos\\cam_323\\Bom\\infos_Imagem38.png','channel_analyze\\infos\\cam_323\\Excelente\\infos_Imagem35.png','channel_analyze\\infos\\cam_323\\Excelente\\infos_Imagem36.png','channel_analyze\\infos\\cam_323\\Pessimo\\infos_Imagem41.png','channel_analyze\\infos\\cam_323\\Pessimo\\infos_Imagem42.png','channel_analyze\\infos\\cam_323\\Ruim\\infos_Imagem39.png','channel_analyze\\infos\\cam_323\\Ruim\\infos_Imagem40.png','channel_analyze\\infos\\cam_50\\Bom\\infos_Imagem5.png','channel_analyze\\infos\\cam_50\\Bom\\infos_Imagem6.png','channel_analyze\\infos\\cam_50\\Excelente\\infos_Imagem1.png','channel_analyze\\infos\\cam_50\\Excelente\\infos_Imagem2.png','channel_analyze\\infos\\cam_50\\Pessimo\\infos_Imagem09.png','channel_analyze\\infos\\cam_50\\Pessimo\\infos_Imagem10.png','channel_analyze\\infos\\cam_50\\Ruim\\infos_Imagem7.png','channel_analyze\\infos\\cam_50\\Ruim\\infos_Imagem8.png','channel_analyze\\infos\\cam_77_3\\Bom\\infos_Imagem13.png','channel_analyze\\infos\\cam_77_3\\Bom\\infos_Imagem14.png','channel_analyze\\infos\\cam_77_3\\Excelente\\infos_Imagem11.png','channel_analyze\\infos\\cam_77_3\\Excelente\\infos_Imagem12.png','channel_analyze\\infos\\cam_77_3\\Pessimo\\infos_Imagem17.png','channel_analyze\\infos\\cam_77_3\\Pessimo\\infos_Imagem18.png','channel_analyze\\infos\\cam_77_3\\Ruim\\infos_Imagem15.png','channel_analyze\\infos\\cam_77_3\\Ruim\\infos_Imagem16.png']
+
+
+        function mostrarInfos(pathimg, pathinfos,cam,folder){ // imagelabel: "image.jpg"
+                document.body.innerHTML="";
+                console.log((cam));
+                var string="<div id='container-geral'><div id='img'><img id='img-original' src='"+pathimg+"' alt=''><div id='elementos-img'><p><b>CAM: </b></p><p class='cam-folder'>"+cam+"        "+"</p><p><b>CLASSE: </b></p><p class='cam-folder'>"+folder+"</p></div><a href='index.html'  id='back'>back</a></div><div id='infos'><img  id='img-infos' src='"+pathinfos+"' alt=''></div></div>"
+                document.body.innerHTML=string; 
+        }
+
+
+        function desenharTabela(){
+            const table=document.getElementById("table");
+            const tbody=document.getElementById("tbody");
+            const thead=document.getElementById("thead");
+            // Preencher tabela:
+            var qtde_col=8;
+            var qtde_linhas=Math.ceil(img_paths.length/qtde_col);
+            var cont=0;
+
+            for(var i=0;i<qtde_linhas;i++){
+                const rowImg=document.createElement("tr");
+                const rowLabels=document.createElement("tr");
+
+                for(var j=0;j<qtde_col;j++){
+                    const cellImg=document.createElement("td");
+                    const cellLabel=document.createElement("td");
+                    const link=document.createElement("a");
+                    const Img = document.createElement('img');
+                    let labelsImg=String(img_paths[cont]).split("\\"); // ['dataset_pecem' , 'cam_...','Classe', 'img']
+                    //
+                    link.appendChild(Img);
+                    // link.href="index.html";
+                    Img.src=String(img_paths[cont]);
+                    Img.height='85';
+                    Img.width='165';
+                    Img.align="center";
+                    cellImg.appendChild(link);
+                    let aux=infos_paths[cont]
+                    cellImg.addEventListener("click", function(){mostrarInfos(Img.src,aux,labelsImg[1],labelsImg[2])});
+                    rowImg.appendChild(cellImg);
+                    //
+                    const textLabel=document.createTextNode(labelsImg[1]+'_'+labelsImg[3].split('.')[0]);
+                    const aText=document.createElement('a');
+                    aText.appendChild(textLabel);
+                    aText.className="labels-imagens-text"
+                    cellImg.appendChild(aText);
+                    rowLabels.appendChild(cellLabel);
+                    cont+=1;
+                }
+
+                //console.log(typeof(id_linha))]
+                tbody.appendChild(rowImg);
+                tbody.appendChild(rowLabels);
+                
+            }
+            table.appendChild(tbody);
+            table.cellsspacing='40';
+            document.body.appendChild(table);
+            }
+        desenharTabela();
+
+        // document.body.innerHTML="";
+    </script>
+
+
+
+</body>
+</html>
