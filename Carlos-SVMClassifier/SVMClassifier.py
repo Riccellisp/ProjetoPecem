@@ -60,8 +60,8 @@ def metric1(image):
 	#return variance_of_laplacian(image)
 	#return eme(image,20,20)
 	#return emee(image,50,50)
-	return standardDesv(image,10,10)
-	#return ANC(image,20,52)
+	#return standardDesv(image,10,10)
+	return ANC(image,20,20)
 def metric2(image):
 	#return variance_of_laplacian(image)
 	#return eme(image,20,20)
@@ -70,72 +70,97 @@ def metric2(image):
 	return ANC(image,20,20)
 
 def SVMClassifier():
-	title='Desvio padrão médio(10,10); Erro padrão médio(20,20)'
+	title='Novo dataset'
 	n_classes=3
-	pathDatabase=os.getcwd()+'\\dataset_pecem'
-	pathExcelente=pathDatabase+'\\Excelente'
-	pathBom=pathDatabase+'\\Bom'
-	pathRuim=pathDatabase+'\\Ruim'
-	pathPessimo=pathDatabase+'\\Pessimo'
+	
+	#pathDatabase=os.getcwd()+'\\organizacao_original\\Cam 077.3'
+	
+	pathDatabase=os.getcwd()+'\\organizacao_original\\Cam 124.1'
+
+	#pathDatabase=os.getcwd()+'\\organizacao_original\\Cam 321'
+
+	#pathVerde=[pathDatabase+'\\05.10.2022 (Verde)',pathDatabase+'\\06.10.2022 (Verde)',pathDatabase+'\\07.10.2022 (Verde)',pathDatabase+'\\08.10.2022 (Verde)']
+	#pathAmarela=[pathDatabase+'\\09.10.2022 (Amarela)',pathDatabase+'\\10.10.2022 (Amarela)']
+	#pathVermelha=[pathDatabase+'\\11.10.2022 (Vermelha)',pathDatabase+'\\12.10.2022 (Vermelha)']
+
+	pathVerde=[pathDatabase+'\\Verde']
+	pathAmarela=[pathDatabase+'\\Amarela']
+	pathVermelha=[pathDatabase+'\\Vermelha']
+
+	#pathVerde=[pathDatabase+'\\21.10.2022 (Verde)',pathDatabase+'\\25.10.2022 (Verde)']
+	#pathVermelha=[pathDatabase+'\\22.10.2022 (Vermelha)',pathDatabase+'\\23.10.2022 (Vermelha)',pathDatabase+'\\24.10.2022 (Vermelha)',pathDatabase+'\\25.10.2022 (Vermelha)']
 
 	list_excelente=[]
 	list_bom=[]
 	list_ruim=[]
 	list_pessimo=[]
 
-	for root, dirs, files in os.walk(pathExcelente):
-		for file in files:
-			list_excelente.append(os.path.join(root,file))
 
-	for root, dirs, files in os.walk(pathBom):
-		for file in files:
-			list_bom.append(os.path.join(root,file))
+	for pathExcelente in pathVerde:
+		for root, dirs, files in os.walk(pathExcelente):
+			for file in files:
+				list_excelente.append(os.path.join(root,file))
+	
+	for pathBom in pathAmarela:
+		for root, dirs, files in os.walk(pathBom):
+			for file in files:
+				list_bom.append(os.path.join(root,file))
 
-	for root, dirs, files in os.walk(pathRuim):
-		for file in files:
-			list_ruim.append(os.path.join(root,file))
-
-	for root, dirs, files in os.walk(pathPessimo):
-		for file in files:
-			list_pessimo.append(os.path.join(root,file))
+	for pathRuim in pathVermelha:
+		for root, dirs, files in os.walk(pathRuim):
+			for file in files:
+				list_ruim.append(os.path.join(root,file))
 
 	parameters_excelente=[]
 	parameters_bom=[]
 	parameters_ruim=[]
 	parameters_pessimo=[]
-
+	
 	for path in list_excelente:
 		img=cv2.imread(path)
-		parameter=[metric1(img),metric2(img)]
-		parameters_excelente.append(parameter)
+		if img is not None:
+			parameter=[metric1(img),metric2(img)]
+			parameters_excelente.append(parameter)
+		else:
+			print('Empty frame')
 
 	for path in list_bom:
 		img=cv2.imread(path)
-		parameter=[metric1(img),metric2(img)]
-		parameters_bom.append(parameter)
+		if img is not None:
+			parameter=[metric1(img),metric2(img)]
+			parameters_bom.append(parameter)
+		else:
+			print('Empty frame')
 
 	for path in list_ruim:
 		img=cv2.imread(path)
-		parameter=[metric1(img),metric2(img)]
-		parameters_ruim.append(parameter)
-
+		if img is not None:
+			parameter=[metric1(img),metric2(img)]
+			parameters_ruim.append(parameter)
+		else:
+			print('Empty frame')
+		'''
 	for path in list_pessimo:
 		img=cv2.imread(path)
 		parameter=[metric1(img),metric2(img)]
-		parameters_pessimo.append(parameter)
+		parameters_pessimo.append(parameter)'''
+
+	print(parameters_excelente)
 
 	X_excelente = np.asarray(parameters_excelente)
 	X_bom = np.asarray(parameters_bom)
 	X_ruim = np.asarray(parameters_ruim)
 	X_pessimo = np.asarray(parameters_pessimo)
-
-	X = np.append(X_excelente,X_bom,axis=0)
+	X = X_excelente
+	X = np.append(X,X_bom,axis=0)
 	X = np.append(X,X_ruim,axis=0)
-	X = np.append(X,X_pessimo,axis=0)
-	Y = np.append(np.ones((1,len(parameters_excelente)))*3,np.ones((1,len(parameters_bom)))*2)
+	#X = np.append(X,X_pessimo,axis=0)
+	Y = np.ones((1,len(parameters_excelente)))*3
+	Y = np.append(Y,np.ones((1,len(parameters_bom)))*2)
 	Y = np.append(Y,np.ones((1,len(parameters_ruim)))*1)
-	Y = np.append(Y,np.ones((1,len(parameters_pessimo)))*0)
+	#Y = np.append(Y,np.ones((1,len(parameters_pessimo)))*0)
 	dataset=[X,Y]
+
 	if n_classes==3:
 		for i in range(0,len(dataset[1])):
 			if dataset[1][i]==1:
@@ -144,14 +169,22 @@ def SVMClassifier():
 				dataset[1][i]=1
 			elif dataset[1][i]==3:
 				dataset[1][i]=2
+	if n_classes==2:
+		for i in range(0,len(dataset[1])):
+			if dataset[1][i]==1:
+				dataset[1][i]=0
+			elif dataset[1][i]==3:
+				dataset[1][i]=2
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
+
 	for i in range(0,1000):
 		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 		clf = SVC(kernel='linear',class_weight='balanced')
 		clf.fit(X_train, y_train)
 		predictions = clf.predict(X_test)
 		sum=sum+accuracy_score(y_test, predictions)
+		print(predictions)
 		for i in range(0,len(predictions)):
 			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
 
@@ -159,17 +192,22 @@ def SVMClassifier():
 	if n_classes==4:
 		tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 		tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
-		class_legend=[["Péssimo","red"],["Ruim","orange"],["Bom","green"],["Excelente","blue"]]
+		class_legend=[["Péssimo","red"],["Ruim","yellow"],["Bom","green"],["Excelente","blue"]]
 		np.savetxt('matriz_confusao\\4 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
 	elif n_classes==3:
-		tabela=np.append([['Péssimo ou Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
-		tabela=np.append([['Predição\Realidade','Péssimo ou Ruim','Bom','Excelente']],tabela,axis=0)
-		class_legend=[["Péssimo ou Ruim","red"],["Bom","orange"],["Excelente","green"]]
+		tabela=np.append([['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Ruim','Bom','Excelente']],tabela,axis=0)
+		class_legend=[["Ruim","red"],["Bom","yellow"],["Excelente","green"]]
 		np.savetxt('matriz_confusao\\3 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	elif n_classes==2:
+		tabela=np.append([['Ruim'],['Excelente']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Ruim','Excelente']],tabela,axis=0)
+		class_legend=[["Ruim","red"],["Excelente","green"]]
+		np.savetxt('matriz_confusao\\2 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
 	avg_accuracy=sum/1000
 	print("Average accuracy=",avg_accuracy)
 	print(tabulate(tabela))
-	X_train, X_test, y_train, y_test = trai.n_test_split(dataset[0], dataset[1])
+	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
 
 	clf = SVC(kernel='linear',class_weight='balanced')
 	clf.fit(X_train, y_train)
@@ -191,7 +229,7 @@ def SVMClassifier():
 		if i==0:
 			colormap.append('red')
 		elif i==1:
-			colormap.append('orange')
+			colormap.append('yellow')
 		elif i==2:
 			colormap.append('green')
 		elif i==3:
@@ -209,6 +247,8 @@ def SVMClassifier():
 	if(n_classes==4):
 		plt.savefig('Gráfico dispersão\\4 Classes\\'+title+'.png')
 	elif(n_classes==3):
+		plt.savefig('Gráfico dispersão\\3 Classes\\'+title+'.png')
+	elif(n_classes==2):
 		plt.savefig('Gráfico dispersão\\3 Classes\\'+title+'.png')
 	plt.show()
 	
