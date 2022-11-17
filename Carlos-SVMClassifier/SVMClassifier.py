@@ -57,17 +57,17 @@ def ANC(image,L1,L2):#Artificial Noise Comparison
 	return rmse(image,cv2.GaussianBlur(image,(L1*2+1,L1*2+1),0))
 
 def metric1(image):
-	#return variance_of_laplacian(image)
+	return variance_of_laplacian(image)
 	#return eme(image,20,20)
 	#return emee(image,50,50)
 	#return standardDesv(image,10,10)
-	return ANC(image,20,20)
+	#return ANC(image,20,20)
 def metric2(image):
-	#return variance_of_laplacian(image)
+	return variance_of_laplacian(image)
 	#return eme(image,20,20)
 	#return emee(image,50,50)
 	#return standardDesv(image,10,10)
-	return ANC(image,20,20)
+	#return ANC(image,20,20)
 
 def SVMClassifier():
 	title='Novo dataset'
@@ -75,7 +75,7 @@ def SVMClassifier():
 	
 	#pathDatabase=os.getcwd()+'\\organizacao_original\\Cam 077.3'
 	
-	pathDatabase=os.getcwd()+'\\organizacao_original\\Cam 124.1'
+	pathDatabase=os.getcwd()+'\\organizacao_original'
 
 	#pathDatabase=os.getcwd()+'\\organizacao_original\\Cam 321'
 
@@ -122,7 +122,7 @@ def SVMClassifier():
 			parameter=[metric1(img),metric2(img)]
 			parameters_excelente.append(parameter)
 		else:
-			print('Empty frame')
+			print(path)
 
 	for path in list_bom:
 		img=cv2.imread(path)
@@ -130,7 +130,7 @@ def SVMClassifier():
 			parameter=[metric1(img),metric2(img)]
 			parameters_bom.append(parameter)
 		else:
-			print('Empty frame')
+			print(path)
 
 	for path in list_ruim:
 		img=cv2.imread(path)
@@ -138,14 +138,12 @@ def SVMClassifier():
 			parameter=[metric1(img),metric2(img)]
 			parameters_ruim.append(parameter)
 		else:
-			print('Empty frame')
+			print(path)
 		'''
 	for path in list_pessimo:
 		img=cv2.imread(path)
 		parameter=[metric1(img),metric2(img)]
 		parameters_pessimo.append(parameter)'''
-
-	print(parameters_excelente)
 
 	X_excelente = np.asarray(parameters_excelente)
 	X_bom = np.asarray(parameters_bom)
@@ -184,7 +182,6 @@ def SVMClassifier():
 		clf.fit(X_train, y_train)
 		predictions = clf.predict(X_test)
 		sum=sum+accuracy_score(y_test, predictions)
-		print(predictions)
 		for i in range(0,len(predictions)):
 			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
 
