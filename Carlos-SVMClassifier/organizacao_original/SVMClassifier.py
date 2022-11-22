@@ -12,6 +12,9 @@ from sklearn.metrics import accuracy_score
 import random
 from standardDesv import standardDesv,stdSpecial,emeSpecial,rmse
 from tabulate import tabulate
+from sklearn.neighbors import NearestCentroid
+from sklearn.inspection import DecisionBoundaryDisplay
+from matplotlib.colors import ListedColormap
 
 def IEM_filter(image):
 	image = image.astype(np.float32)
@@ -67,16 +70,16 @@ def metric2(image):
 	#return eme(image,20,20)
 	#return emee(image,50,50)
 	#return standardDesv(image,10,10)
-	return ANC(image,10,10)
+	return ANC(image,20,20)
 
 def SVMClassifier():
-	#title='Cam 077.3'
-	title='Cam124.1'
+	title='Cam 077.3'
+	#title='Cam124.1'
 	n_classes=3
 	
-	#pathDatabase=os.getcwd()+'\\Cam 077.3'
+	pathDatabase=os.getcwd()+'\\Cam 077.3'
 
-	pathDatabase=os.getcwd()+'\\Cam 124.1'
+	#pathDatabase=os.getcwd()+'\\Cam 124.1'
 
 	pathVerde=[pathDatabase+'\\Verde']
 	pathAmarela=[pathDatabase+'\\Amarela']
@@ -241,6 +244,153 @@ def SVMClassifier():
 		plt.savefig(pathDatabase+'\\'+title+'.png')
 	plt.show()
 	
+def NCCClassifier():
+	#title='Cam 077.3'
+	title='Cam124.1'
+	n_classes=3
+	
+	pathDatabase=os.getcwd()+'\\Cam 077.3'
 
-SVMClassifier()
+	#pathDatabase=os.getcwd()+'\\Cam 124.1'
+
+	pathVerde=[pathDatabase+'\\Verde']
+	pathAmarela=[pathDatabase+'\\Amarela']
+	pathVermelha=[pathDatabase+'\\Vermelha']
+
+	list_excelente=[]
+	list_bom=[]
+	list_ruim=[]
+	#list_pessimo=[]
+
+
+	for pathExcelente in pathVerde:
+		for root, dirs, files in os.walk(pathExcelente):
+			for file in files:
+				list_excelente.append(os.path.join(root,file))
+	
+	for pathBom in pathAmarela:
+		for root, dirs, files in os.walk(pathBom):
+			for file in files:
+				list_bom.append(os.path.join(root,file))
+
+	for pathRuim in pathVermelha:
+		for root, dirs, files in os.walk(pathRuim):
+			for file in files:
+				list_ruim.append(os.path.join(root,file))
+
+	parameters_excelente=[]
+	parameters_bom=[]
+	parameters_ruim=[]
+	#parameters_pessimo=[]
+	
+	for path in list_excelente:
+		img=cv2.imread(path)
+		if img is not None:
+			parameter=[0,metric2(img)]
+			parameters_excelente.append(parameter)
+		else:
+			print(path)
+
+	for path in list_bom:
+		img=cv2.imread(path)
+		if img is not None:
+			parameter=[0,metric2(img)]
+			parameters_bom.append(parameter)
+		else:
+			print(path)
+
+	for path in list_ruim:
+		img=cv2.imread(path)
+		if img is not None:
+			parameter=[0,metric2(img)]
+			parameters_ruim.append(parameter)
+		else:
+			print(path)
+		'''
+	for path in list_pessimo:
+		img=cv2.imread(path)
+		parameter=[metric1(img),metric2(img)]
+		parameters_pessimo.append(parameter)'''
+
+	X_excelente = np.asarray(parameters_excelente)
+	X_bom = np.asarray(parameters_bom)
+	X_ruim = np.asarray(parameters_ruim)
+	#X_pessimo = np.asarray(parameters_pessimo)
+	X = X_excelente
+	X = np.append(X,X_bom,axis=0)
+	X = np.append(X,X_ruim,axis=0)
+	#X = np.append(X,X_pessimo,axis=0)
+	Y = np.ones((1,len(parameters_excelente)))*3
+	Y = np.append(Y,np.ones((1,len(parameters_bom)))*2)
+	Y = np.append(Y,np.ones((1,len(parameters_ruim)))*1)
+	#Y = np.append(Y,np.ones((1,len(parameters_pessimo)))*0)
+	dataset=[X,Y]
+
+	if n_classes==3:
+		for i in range(0,len(dataset[1])):
+			if dataset[1][i]==1:
+				dataset[1][i]=0
+			elif dataset[1][i]==2:
+				dataset[1][i]=1
+			elif dataset[1][i]==3:
+				dataset[1][i]=2
+	if n_classes==2:
+		for i in range(0,len(dataset[1])):
+			if dataset[1][i]==1:
+				dataset[1][i]=0
+			elif dataset[1][i]==3:
+				dataset[1][i]=2
+	sum=0
+	tabela=np.zeros((n_classes,n_classes))
+
+	for i in range(0,1000):
+		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
+		clf = NearestCentroid()
+		clf.fit(X_train, y_train)
+		predictions = clf.predict(X_test)
+		sum=sum+accuracy_score(y_test, predictions)
+		for i in range(0,len(predictions)):
+			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
+
+	tabela=tabela/1000
+	if n_classes==4:
+		tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
+		class_legend=[["Péssimo","red"],["Ruim","yellow"],["Bom","green"],["Excelente","blue"]]
+		np.savetxt(pathDatabase+'\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	elif n_classes==3:
+		tabela=np.append([['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Ruim','Bom','Excelente']],tabela,axis=0)
+		class_legend=[["Ruim","red"],["Bom","yellow"],["Excelente","green"]]
+		np.savetxt(pathDatabase+'\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	elif n_classes==2:
+		tabela=np.append([['Ruim'],['Excelente']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Ruim','Excelente']],tabela,axis=0)
+		class_legend=[["Ruim","red"],["Excelente","green"]]
+		np.savetxt(pathDatabase+'\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
+	avg_accuracy=sum/1000
+	print("Average accuracy=",avg_accuracy)
+	print(tabulate(tabela))
+	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
+
+	clf = NearestCentroid()
+	clf.fit(X_train, y_train)
+
+	predictions = clf.predict(X_test)
+
+	cmap=ListedColormap(["red","orange","green"])
+
+	DecisionBoundaryDisplay.from_estimator(clf, X_train, cmap=cmap, response_method="predict")
+
+	plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cmap, edgecolor="k", s=20)
+	plt.title("Nearest Centroid 3-Class classification")
+	if(n_classes==4):
+		plt.savefig(pathDatabase+'\\'+title+'.png')
+	elif(n_classes==3):
+		plt.savefig(pathDatabase+'\\'+title+'.png')
+	elif(n_classes==2):
+		plt.savefig(pathDatabase+'\\'+title+'.png')
+	plt.show()
+
+NCCClassifier()
 
