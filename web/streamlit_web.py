@@ -244,6 +244,7 @@ def main():
             
     with st.container():
         images=loadImages("dataset_pecem")
+        st.image(images[0])
         image_file  = st.file_uploader("Upload an image", type=['jpg', 'jpeg', 'png'])
 
         # botões das classes:
