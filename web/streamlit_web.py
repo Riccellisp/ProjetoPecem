@@ -221,8 +221,8 @@ def loadImages(path):
     #       # grandson_img_file
     image_list = []
     for cam_folder in sorted(os.listdir(path)):
-        for class_folder in sorted(os.listdir(path+"\\"+cam_folder)):
-            for image_paths in sorted(glob.glob(path+"\\"+cam_folder+"\\"+f"{class_folder}"+"\\*")):
+        for class_folder in sorted(os.listdir(path+"/"+cam_folder)):
+            for image_paths in sorted(glob.glob(path+"/"+cam_folder+"/"+f"{class_folder}"+"/*")):
                 print(image_paths)
                 image = cv2.cvtColor(cv2.imread(image_paths), cv2.COLOR_BGR2RGB)
                 image_list.append(image)
