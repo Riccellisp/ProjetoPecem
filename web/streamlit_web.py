@@ -200,12 +200,12 @@ def transform_image(image):
 @st.cache(suppress_st_warning=True)
 def load_model():
 
-    ckpt_path = f'blur-detection-mobilenet-5358.ckpt'
+    ckpt_path = f'web/blur-detection-mobilenet-5358.ckpt'
     model_ft = ClassificationModel.load_from_checkpoint(ckpt_path)
     # Since we are using our model only for inference, switch to `eval` mode:
     model_ft.eval()
 
-    imagenet_class_index = json.load(open(f"{os.getcwd()}/data/imagenet_class_index.json"))
+    imagenet_class_index = json.load(open(f"{os.getcwd()}/web/data/imagenet_class_index.json"))
     
     return model_ft, imagenet_class_index
 
@@ -232,8 +232,7 @@ def loadImages(path):
 def main():
     """Função responsável por gerar a pagina web"""
     model, imagenet_class_index = load_model()
-    st.title("Sistema de Classificação Manual")
-
+    #st.title("Sistema de Classificação Manual")
     # st.write("This application knows the objects in an image , but works best when only one object is in the image")
     with st.sidebar:
         imagens_fixas=[cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Bom/Imagem13.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Excelente/Imagem11.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Pessimo/Imagem17.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Ruim/Imagem15.jpg"),cv2.COLOR_BGR2RGB)]
@@ -269,22 +268,22 @@ def main():
         # botoes resultado e confimação
         c1,c2=st.columns(2)
         with c1:
-            resultado=st.button(f"{prediction}", key="previsao", help=None, on_click=None, args=None, kwargs=None, disabled=False)
+            resultado=st.button(f"{prediction}", key="previsao")
             
         with c2:
-            st.button("Confirmar", key="ok", help=None, on_click=None, args=None, kwargs=None, disabled=False)
+            st.button("Confirmar", key="ok")
 
         st.markdown("<hr>",unsafe_allow_html=True)
         # botões classificacao via streamlit    
         b1,b2,b3,b4=st.columns(4)
         with b1:
-            st.button("Excelente", key="exe", help=None, on_click=None, args=None, kwargs=None, disabled=False)
+            st.button("Excelente", key="exe")
         with b2:
-            st.button("Boa", key="boa", help=None, on_click=None, args=None, kwargs=None, disabled=False)
+            st.button("Boa", key="boa")
         with b3:
-            st.button("Ruim", key="rum", help=None, on_click=None, args=None, kwargs=None, disabled=False)
+            st.button("Ruim", key="rum")
         with b4:
-            st.button("Pessima", key="pes", help=None, on_click=None, args=None, kwargs=None, disabled=False)
+            st.button("Pessima", key="pes")
 
     
 
