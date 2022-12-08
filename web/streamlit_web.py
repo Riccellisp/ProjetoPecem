@@ -236,7 +236,7 @@ def main():
 
     # st.write("This application knows the objects in an image , but works best when only one object is in the image")
     with st.sidebar:
-        imagens_fixas=[cv2.cvtColor(cv2.imread("../dataset_pecem/cam_77_3/Bom/Imagem13.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem\cam_77_3\Excelente\Imagem11.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem\cam_77_3\Pessimo\Imagem17.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem\cam_77_3\Ruim\Imagem15.jpg"),cv2.COLOR_BGR2RGB)]
+        imagens_fixas=[cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Bom/Imagem13.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem\cam_77_3\Excelente\Imagem11.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem\cam_77_3\Pessimo\Imagem17.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem\cam_77_3\Ruim\Imagem15.jpg"),cv2.COLOR_BGR2RGB)]
         st.image(imagens_fixas[0])
         st.image(imagens_fixas[1])
         st.image(imagens_fixas[2])
