@@ -3,7 +3,13 @@ import glob
 import json
 import streamlit as st
 import streamlit.components.v1 as components
-import cv2
+
+try: 
+    import cv2 
+except ImportError: 
+    import pip 
+    pip.main(['install', '--user', 'opencv-python']) 
+    import cv2  
 
 from PIL import Image
 from torchvision import models, transforms 
