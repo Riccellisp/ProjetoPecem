@@ -169,15 +169,6 @@ class ClassificationModel(pl.LightningModule):
 #         self.log("fp", tp)
 #         self.log("fn", tn)
 
-
-def get_prediction(image, model, imagenet_class_index):
-    tensor = transform_image(image=image)
-    outputs = model.forward(tensor)
-    _, y_hat = outputs.max(1)
-    predicted_idx = str(y_hat.item())
-    return imagenet_class_index[predicted_idx][1]
-
-
 def transform_image(image):
     """ Transform image to fit model
 
@@ -196,6 +187,13 @@ def transform_image(image):
     return transformation(image).unsqueeze(0)
 
 
+def get_prediction(image, model, imagenet_class_index):
+    tensor = transform_image(image=image)
+    outputs = model.forward(tensor)
+    _, y_hat = outputs.max(1)
+    predicted_idx = str(y_hat.item())
+    return imagenet_class_index[predicted_idx][1]
+
 
 @st.cache(suppress_st_warning=True)
 def load_model():
@@ -208,6 +206,7 @@ def load_model():
     imagenet_class_index = json.load(open(f"{os.getcwd()}/web/data/imagenet_class_index.json"))
     
     return model_ft, imagenet_class_index
+
 
 
 def loadImages(path):
@@ -223,68 +222,75 @@ def loadImages(path):
     for cam_folder in sorted(os.listdir(path)):
         for class_folder in sorted(os.listdir(path+"/"+cam_folder)):
             for image_paths in sorted(glob.glob(path+"/"+cam_folder+"/"+f"{class_folder}"+"/*")):
-                print(image_paths)
-                image = cv2.cvtColor(cv2.imread(image_paths), cv2.COLOR_BGR2RGB)
+                image = Image.open(image_paths)
                 image_list.append(image)
 
     return image_list
 
 def main():
     """Função responsável por gerar a pagina web"""
+
     model, imagenet_class_index = load_model()
     #st.title("Sistema de Classificação Manual")
-    # st.write("This application knows the objects in an image , but works best when only one object is in the image")
+    #st.write("This application knows the objects in an image , but works best when only one object is in the image")
     with st.sidebar:
-        imagens_fixas=[cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Bom/Imagem13.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Excelente/Imagem11.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Pessimo/Imagem17.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Ruim/Imagem15.jpg"),cv2.COLOR_BGR2RGB)]
-        st.image(imagens_fixas[0])
-        st.image(imagens_fixas[1])
-        st.image(imagens_fixas[2])
-        st.image(imagens_fixas[3])
+        # OBS: Ainda precisa automatizar esse processo das fixas
+        imagens_fixas=[cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Bom/Imagem13.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Excelente/Imagem11.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Ruim/Imagem15.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Pessimo/Imagem17.jpg"),cv2.COLOR_BGR2RGB)]
+        st.image(imagens_fixas[0],"Boa")
+        st.image(imagens_fixas[1],"Excelente")
+        st.image(imagens_fixas[2],"Ruim")
+        st.image(imagens_fixas[3],"Pessima")
             
-    with st.container():
-        images=loadImages("dataset_pecem")
-        st.image(images[0])
-        image_file  = st.file_uploader("Upload an image", type=['jpg', 'jpeg', 'png'])
+   
+    images=loadImages("dataset_pecem")
+    # image_file  = st.file_uploader("Upload an image", type=['jpg', 'jpeg', 'png'])
 
-        # botões das classes:
-        # html_string = """
-        #                 <div id='menu_classificacao'>
-        #                     <button type='submit'>Excelente</button>
-        #                     <button type='submit'>Boa</button>
-        #                     <button type='submit'>Ruim</button>
-        #                     <button type='submit'>Pessima</button>
-        #                 </div>"""
-        # st.markdown(html_string, unsafe_allow_html=True)
-
-    if image_file:
-       
-        left_column, right_column = st.columns(2)
-        left_column.image(image_file, caption="Uploaded image", use_column_width=True)
-        image = Image.open(image_file)
+    # if image_file:  
+    #     left_column, right_column = st.columns(2)
+    #     left_column.image(image_file, caption="Uploaded image", use_column_width=True)
+    #     image = Image.open(image_file)
         # pred_button = st.button("Predict")
-        
-        
-        prediction = get_prediction(image, model, imagenet_class_index)
-        # botoes resultado e confimação
-        c1,c2=st.columns(2)
-        with c1:
-            resultado=st.button(f"{prediction}", key="previsao")
-            
-        with c2:
-            st.button("Confirmar", key="ok")
 
-        st.markdown("<hr>",unsafe_allow_html=True)
-        # botões classificacao via streamlit    
-        b1,b2,b3,b4=st.columns(4)
-        with b1:
-            st.button("Excelente", key="exe")
-        with b2:
-            st.button("Boa", key="boa")
-        with b3:
-            st.button("Ruim", key="rum")
-        with b4:
-            st.button("Pessima", key="pes")
+    count = 0
+    if 'count' not in st.session_state:
+        st.session_state.count = 0
+    img=st.image(images[st.session_state.count]) 
+    imagem=images[st.session_state.count]
+    
+    # botoes resultado e confimação
+    c1,c2=st.columns(2)
+    with c1:
+        prediction = get_prediction(imagem, model, imagenet_class_index)
+        resultado=st.button(f"Classificação: {prediction}", key="previsao")
+    with c2:
+        confirma_button=st.button("Confirmar", key="ok")
 
+
+    if confirma_button:
+        st.session_state.count += 1
+    
+    
+    # botões das classes:
+    # html_string = """
+    #                 <div id='menu_classificacao'>
+    #                     <button type='submit'>Excelente</button>
+    #                     <button type='submit'>Boa</button>
+    #                     <button type='submit'>Ruim</button>
+    #                     <button type='submit'>Pessima</button>
+    #                 </div>"""
+    # st.markdown(html_string, unsafe_allow_html=True)
+
+    st.markdown("<hr>",unsafe_allow_html=True)
+    # botões classificacao via streamlit    
+    b1,b2,b3,b4=st.columns(4)
+    with b1:
+        st.button("Excelente", key="exe")
+    with b2:
+        st.button("Boa", key="boa")
+    with b3:
+        st.button("Ruim", key="rum")
+    with b4:
+        st.button("Pessima", key="pes")
     
 
 
