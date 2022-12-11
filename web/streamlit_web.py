@@ -264,10 +264,16 @@ def main():
 
         if confirma_button:
             st.session_state.count += 1
+            print(st.session_state.count)
         
         
         # botões das classes:
         # html_string = """
+        #                 <style>
+        #                     button{
+        #                         background-color: black;
+        #                     }
+        #                 </style>
         #                 <div id='menu_classificacao'>
         #                     <button type='submit'>Excelente</button>
         #                     <button type='submit'>Boa</button>
@@ -275,6 +281,7 @@ def main():
         #                     <button type='submit'>Pessima</button>
         #                 </div>"""
         # st.markdown(html_string, unsafe_allow_html=True)
+        st.write(st.session_state.count)
 
         st.markdown("<hr>",unsafe_allow_html=True)
         # botões classificacao via streamlit    
