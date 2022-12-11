@@ -1,0 +1,7 @@
+torchvision
+pytorch_lightning
+torch
+scikit-learn
+streamlit
+mysql-connector-python
+opencv-python-headless

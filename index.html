@@ -6,70 +6,97 @@
     <style type='text/css'>
 
         #container-geral{
-        width: 100%;
-        height: 700px;
+        width: 99%;
+        height: 300%;
         /* border: 1px solid #000; */
         display: flex;
         flex-direction: row;              /*row | row-reverse | column | column-reverse*/
         /* flex-wrap: wrap;*/             /*wrap |nowrap |wrap-reverse*/
         justify-content:flex-start;       /*flex-start | flex-end | center | space-between | space-around*/
-        align-items: center;              /*strech | center | flex-start | flex-end | baseline */
+        align-items: flex-start;           /*strech | center | flex-start | flex-end | baseline */
+        position: absolute;
         }
-        
+        /* 1229,6 */
+        /* DIV DAS INFOS */
         #infos{
-        display: flex;
         background-color: white;
-        width: 100%;
+        width: 71.5%;
         /* margin:5px; */
         height:100%;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         /* margin-left: 5px; */
         border: 1px solid #000;
         margin-right: 5px;
+
+        position: relative;
+        left: 28.5%;
         }
-        
-        #img{ 
+        .imagens-infos{
+            display:flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            height: 100%;
+        }
+        .img-infos{
+        width: 100%;
+        margin: 5px;
+        }          hr{margin-bottom:30px; margin-top:4px;width: 100%;size:5;color: #000;}
+        .img-infos-h5{margin-top: 0;margin-bottom: 0; font-size: 18px;}
+        #ultimo-h5{margin-top: 60px;margin-bottom: 100px;}
+
+        /* DIV DA IMAGEM */
+        #img{
         display: flex;
-        width: 40%;
-        border: 1px solid #000; 
+        width: 28%;
+        border: 1px solid #000;
         /* margin:7px; */
         height:100%;
         flex-direction: column;
         align-items: flex-start ;
-        background-color: white;    
+        justify-content: flex-start;
+        background-color: white;
+        position: fixed;
         }
-        
+
         #img-original{
-        width: 100%;height:250px;
+        width: 100%;
+        height:30%;
         }
-        
+
         #elementos-img{
+            margin-left: 4px;
             padding-top: 10px;
             display: inline;
         }
         p{
             display: inline;
             font-size: 22px;
+            word-spacing: 4px;
+            line-height: 30px;
         }
-        .cam-folder{  
+        .cam-folder{
             display: inline;
             text-transform: uppercase;
             font-family: 'Times New Roman', Times, serif;
         }
-        
-        #img-infos{
-        width: 100%;
-        height:700px;
+
+        #back-button{
+            margin-top: 85%;
+            margin-left: 9px;
+            text-align: center;
         }
 
         #back{
         font-size: 22px;
         font-family:Georgia, 'Times New Roman', Times, serif;
         text-align:start;
-        padding-top:250px;
-        padding-left: 9px;
         }
+
         /* Referente a tabela */
         #linha-classes{
             font-size: 12px;
@@ -104,15 +131,14 @@
     <script type="text/javascript" scr="channel_analyze/js/script.js">
         var img_paths=['dataset_pecem\\cam_124_1\\Bom\\Imagem21.jpg','dataset_pecem\\cam_124_1\\Bom\\Imagem22.jpg','dataset_pecem\\cam_124_1\\Excelente\\Imagem19.jpg','dataset_pecem\\cam_124_1\\Excelente\\Imagem20.jpg','dataset_pecem\\cam_124_1\\Pessimo\\Imagem25.jpg','dataset_pecem\\cam_124_1\\Pessimo\\Imagem26.jpg','dataset_pecem\\cam_124_1\\Ruim\\Imagem23.jpg','dataset_pecem\\cam_124_1\\Ruim\\Imagem24.jpg','dataset_pecem\\cam_321\\Bom\\Imagem29.jpg','dataset_pecem\\cam_321\\Bom\\Imagem30.jpg','dataset_pecem\\cam_321\\Excelente\\Imagem27.jpg','dataset_pecem\\cam_321\\Excelente\\Imagem28.jpg','dataset_pecem\\cam_321\\Pessimo\\Imagem33.jpg','dataset_pecem\\cam_321\\Pessimo\\Imagem34.jpg','dataset_pecem\\cam_321\\Ruim\\Imagem31.jpg','dataset_pecem\\cam_321\\Ruim\\Imagem32.jpg','dataset_pecem\\cam_323\\Bom\\Imagem37.jpg','dataset_pecem\\cam_323\\Bom\\Imagem38.jpg','dataset_pecem\\cam_323\\Excelente\\Imagem35.jpg','dataset_pecem\\cam_323\\Excelente\\Imagem36.jpg','dataset_pecem\\cam_323\\Pessimo\\Imagem41.jpg','dataset_pecem\\cam_323\\Pessimo\\Imagem42.jpg','dataset_pecem\\cam_323\\Ruim\\Imagem39.jpg','dataset_pecem\\cam_323\\Ruim\\Imagem40.jpg','dataset_pecem\\cam_50\\Bom\\Imagem5.jpg','dataset_pecem\\cam_50\\Bom\\Imagem6.jpg','dataset_pecem\\cam_50\\Excelente\\Imagem1.jpg','dataset_pecem\\cam_50\\Excelente\\Imagem2.jpg','dataset_pecem\\cam_50\\Pessimo\\Imagem09.jpg','dataset_pecem\\cam_50\\Pessimo\\Imagem10.jpg','dataset_pecem\\cam_50\\Ruim\\Imagem7.jpg','dataset_pecem\\cam_50\\Ruim\\Imagem8.jpg','dataset_pecem\\cam_77_3\\Bom\\Imagem13.jpg','dataset_pecem\\cam_77_3\\Bom\\Imagem14.jpg','dataset_pecem\\cam_77_3\\Excelente\\Imagem11.jpg','dataset_pecem\\cam_77_3\\Excelente\\Imagem12.jpg','dataset_pecem\\cam_77_3\\Pessimo\\Imagem17.jpg','dataset_pecem\\cam_77_3\\Pessimo\\Imagem18.jpg','dataset_pecem\\cam_77_3\\Ruim\\Imagem15.jpg','dataset_pecem\\cam_77_3\\Ruim\\Imagem16.jpg']
         var infos_paths=['channel_analyze\\infos\\cam_124_1\\Bom\\infos_Imagem21.png','channel_analyze\\infos\\cam_124_1\\Bom\\infos_Imagem22.png','channel_analyze\\infos\\cam_124_1\\Excelente\\infos_Imagem19.png','channel_analyze\\infos\\cam_124_1\\Excelente\\infos_Imagem20.png','channel_analyze\\infos\\cam_124_1\\Pessimo\\infos_Imagem25.png','channel_analyze\\infos\\cam_124_1\\Pessimo\\infos_Imagem26.png','channel_analyze\\infos\\cam_124_1\\Ruim\\infos_Imagem23.png','channel_analyze\\infos\\cam_124_1\\Ruim\\infos_Imagem24.png','channel_analyze\\infos\\cam_321\\Bom\\infos_Imagem29.png','channel_analyze\\infos\\cam_321\\Bom\\infos_Imagem30.png','channel_analyze\\infos\\cam_321\\Excelente\\infos_Imagem27.png','channel_analyze\\infos\\cam_321\\Excelente\\infos_Imagem28.png','channel_analyze\\infos\\cam_321\\Pessimo\\infos_Imagem33.png','channel_analyze\\infos\\cam_321\\Pessimo\\infos_Imagem34.png','channel_analyze\\infos\\cam_321\\Ruim\\infos_Imagem31.png','channel_analyze\\infos\\cam_321\\Ruim\\infos_Imagem32.png','channel_analyze\\infos\\cam_323\\Bom\\infos_Imagem37.png','channel_analyze\\infos\\cam_323\\Bom\\infos_Imagem38.png','channel_analyze\\infos\\cam_323\\Excelente\\infos_Imagem35.png','channel_analyze\\infos\\cam_323\\Excelente\\infos_Imagem36.png','channel_analyze\\infos\\cam_323\\Pessimo\\infos_Imagem41.png','channel_analyze\\infos\\cam_323\\Pessimo\\infos_Imagem42.png','channel_analyze\\infos\\cam_323\\Ruim\\infos_Imagem39.png','channel_analyze\\infos\\cam_323\\Ruim\\infos_Imagem40.png','channel_analyze\\infos\\cam_50\\Bom\\infos_Imagem5.png','channel_analyze\\infos\\cam_50\\Bom\\infos_Imagem6.png','channel_analyze\\infos\\cam_50\\Excelente\\infos_Imagem1.png','channel_analyze\\infos\\cam_50\\Excelente\\infos_Imagem2.png','channel_analyze\\infos\\cam_50\\Pessimo\\infos_Imagem09.png','channel_analyze\\infos\\cam_50\\Pessimo\\infos_Imagem10.png','channel_analyze\\infos\\cam_50\\Ruim\\infos_Imagem7.png','channel_analyze\\infos\\cam_50\\Ruim\\infos_Imagem8.png','channel_analyze\\infos\\cam_77_3\\Bom\\infos_Imagem13.png','channel_analyze\\infos\\cam_77_3\\Bom\\infos_Imagem14.png','channel_analyze\\infos\\cam_77_3\\Excelente\\infos_Imagem11.png','channel_analyze\\infos\\cam_77_3\\Excelente\\infos_Imagem12.png','channel_analyze\\infos\\cam_77_3\\Pessimo\\infos_Imagem17.png','channel_analyze\\infos\\cam_77_3\\Pessimo\\infos_Imagem18.png','channel_analyze\\infos\\cam_77_3\\Ruim\\infos_Imagem15.png','channel_analyze\\infos\\cam_77_3\\Ruim\\infos_Imagem16.png']
+        var comparasionH_paths=['channel_analyze\\comparasion-H\\cam_124_1\\Bom\\Imagem21_diurna.png','channel_analyze\\comparasion-H\\cam_124_1\\Bom\\Imagem22_noturna.png','channel_analyze\\comparasion-H\\cam_124_1\\Excelente\\Imagem19_diurna.png','channel_analyze\\comparasion-H\\cam_124_1\\Excelente\\Imagem20_noturna.png','channel_analyze\\comparasion-H\\cam_124_1\\Pessimo\\Imagem25_diurna.png','channel_analyze\\comparasion-H\\cam_124_1\\Pessimo\\Imagem26_noturna.png','channel_analyze\\comparasion-H\\cam_124_1\\Ruim\\Imagem23_diurna.png','channel_analyze\\comparasion-H\\cam_124_1\\Ruim\\Imagem24_noturna.png','channel_analyze\\comparasion-H\\cam_321\\Bom\\Imagem29_diurna.png','channel_analyze\\comparasion-H\\cam_321\\Bom\\Imagem30_noturna.png','channel_analyze\\comparasion-H\\cam_321\\Excelente\\Imagem27_diurna.png','channel_analyze\\comparasion-H\\cam_321\\Excelente\\Imagem28_noturna.png','channel_analyze\\comparasion-H\\cam_321\\Pessimo\\Imagem33_diurna.png','channel_analyze\\comparasion-H\\cam_321\\Pessimo\\Imagem34_noturna.png','channel_analyze\\comparasion-H\\cam_321\\Ruim\\Imagem31_diurna.png','channel_analyze\\comparasion-H\\cam_321\\Ruim\\Imagem32_noturna.png','channel_analyze\\comparasion-H\\cam_323\\Bom\\Imagem37_diurna.png','channel_analyze\\comparasion-H\\cam_323\\Bom\\Imagem38_noturna.png','channel_analyze\\comparasion-H\\cam_323\\Excelente\\Imagem35_diurna.png','channel_analyze\\comparasion-H\\cam_323\\Excelente\\Imagem36_noturna.png','channel_analyze\\comparasion-H\\cam_323\\Pessimo\\Imagem41_diurna.png','channel_analyze\\comparasion-H\\cam_323\\Pessimo\\Imagem42_noturna.png','channel_analyze\\comparasion-H\\cam_323\\Ruim\\Imagem39_diurna.png','channel_analyze\\comparasion-H\\cam_323\\Ruim\\Imagem40_noturna.png','channel_analyze\\comparasion-H\\cam_50\\Bom\\Imagem5_diurna.png','channel_analyze\\comparasion-H\\cam_50\\Bom\\Imagem6_noturna.png','channel_analyze\\comparasion-H\\cam_50\\Excelente\\Imagem1_diurna.png','channel_analyze\\comparasion-H\\cam_50\\Excelente\\Imagem2_noturna.png','channel_analyze\\comparasion-H\\cam_50\\Pessimo\\Imagem09_diurna.png','channel_analyze\\comparasion-H\\cam_50\\Pessimo\\Imagem10_noturna.png','channel_analyze\\comparasion-H\\cam_50\\Ruim\\Imagem7_diurna.png','channel_analyze\\comparasion-H\\cam_50\\Ruim\\Imagem8_noturna.png','channel_analyze\\comparasion-H\\cam_77_3\\Bom\\Imagem13_diurna.png','channel_analyze\\comparasion-H\\cam_77_3\\Bom\\Imagem14_noturna.png','channel_analyze\\comparasion-H\\cam_77_3\\Excelente\\Imagem11_diurna.png','channel_analyze\\comparasion-H\\cam_77_3\\Excelente\\Imagem12_noturna.png','channel_analyze\\comparasion-H\\cam_77_3\\Pessimo\\Imagem17_diurna.png','channel_analyze\\comparasion-H\\cam_77_3\\Pessimo\\Imagem18_noturna.png','channel_analyze\\comparasion-H\\cam_77_3\\Ruim\\Imagem15_diurna.png','channel_analyze\\comparasion-H\\cam_77_3\\Ruim\\Imagem16_noturna.png']
+        var infosYLAB=['channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Bom\\infosLY_Imagem21.png','channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Bom\\infosLY_Imagem22.png','channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Excelente\\infosLY_Imagem19.png','channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Excelente\\infosLY_Imagem20.png','channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Pessimo\\infosLY_Imagem25.png','channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Pessimo\\infosLY_Imagem26.png','channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Ruim\\infosLY_Imagem23.png','channel_analyze\\infos_Lab&YCrCb\\cam_124_1\\Ruim\\infosLY_Imagem24.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Bom\\infosLY_Imagem29.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Bom\\infosLY_Imagem30.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Excelente\\infosLY_Imagem27.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Excelente\\infosLY_Imagem28.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Pessimo\\infosLY_Imagem33.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Pessimo\\infosLY_Imagem34.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Ruim\\infosLY_Imagem31.png','channel_analyze\\infos_Lab&YCrCb\\cam_321\\Ruim\\infosLY_Imagem32.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Bom\\infosLY_Imagem37.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Bom\\infosLY_Imagem38.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Excelente\\infosLY_Imagem35.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Excelente\\infosLY_Imagem36.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Pessimo\\infosLY_Imagem41.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Pessimo\\infosLY_Imagem42.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Ruim\\infosLY_Imagem39.png','channel_analyze\\infos_Lab&YCrCb\\cam_323\\Ruim\\infosLY_Imagem40.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Bom\\infosLY_Imagem5.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Bom\\infosLY_Imagem6.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Excelente\\infosLY_Imagem1.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Excelente\\infosLY_Imagem2.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Pessimo\\infosLY_Imagem09.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Pessimo\\infosLY_Imagem10.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Ruim\\infosLY_Imagem7.png','channel_analyze\\infos_Lab&YCrCb\\cam_50\\Ruim\\infosLY_Imagem8.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Bom\\infosLY_Imagem13.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Bom\\infosLY_Imagem14.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Excelente\\infosLY_Imagem11.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Excelente\\infosLY_Imagem12.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Pessimo\\infosLY_Imagem17.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Pessimo\\infosLY_Imagem18.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Ruim\\infosLY_Imagem15.png','channel_analyze\\infos_Lab&YCrCb\\cam_77_3\\Ruim\\infosLY_Imagem16.png']
 
-
-        function mostrarInfos(pathimg, pathinfos,cam,folder){ // imagelabel: "image.jpg"
+        function mostrarInfos(pathimg,cam,folder,pathinfos,pathinfosYLAB,comparasionHue,img){ // imagelabel: "image.jpg"
                 document.body.innerHTML="";
-                console.log((cam));
-                var string="<div id='container-geral'><div id='img'><img id='img-original' src='"+pathimg+"' alt=''><div id='elementos-img'><p><b>CAM: </b></p><p class='cam-folder'>"+cam+"        "+"</p><p><b>CLASSE: </b></p><p class='cam-folder'>"+folder+"</p></div><a href='index.html'  id='back'>back</a></div><div id='infos'><img  id='img-infos' src='"+pathinfos+"' alt=''></div></div>"
+                var string="<div id='container-geral'><div id='img'><img id='img-original' src='"+pathimg+"' alt=''><div id='elementos-img'><p><b>IMAGEM: </b></p><p class='cam-folder'>"+img+"</p><br><p><b>CAM: </b></p><p class='cam-folder'>"+cam+"</p><br><p><b>CLASSE: </b></p><p class='cam-folder'>"+folder+"</p></div><button id='back-button'><a href='index.html'  id='back'>back</a></button></div><div id='infos'><div class='imagens-infos'><h5 class='img-infos-h5'>RGB e HSV</h5><img  class='img-infos' src='"+pathinfos+"' alt=''><hr></div><div class='imagens-infos'><h5 class='img-infos-h5'>YCRCB e LAB</h5><img  class='img-infos' src='"+pathinfosYLAB+"' alt=''><hr></div><div class='imagens-infos'><h5 class='img-infos-h5' id='ultimo-h5'>COMPARAÇÃO CANAL 'HUE' (modulo da diferença)</h5><img  class='img-infos' src='"+comparasionHue+"' alt=''></div></div></div>"
                 document.body.innerHTML=string; 
         }
-
 
         function desenharTabela(){
             const table=document.getElementById("table");
@@ -142,7 +168,11 @@
                     Img.align="center";
                     cellImg.appendChild(link);
                     let aux=infos_paths[cont]
-                    cellImg.addEventListener("click", function(){mostrarInfos(Img.src,aux,labelsImg[1],labelsImg[2])});
+                    let aux2=infosYLAB[cont]
+                    let aux3=comparasionH_paths[cont]
+                    
+
+                    cellImg.addEventListener("click", function(){mostrarInfos(Img.src,labelsImg[1],labelsImg[2],aux,aux2,aux3,labelsImg[3])});
                     rowImg.appendChild(cellImg);
                     //
                     const textLabel=document.createTextNode(labelsImg[1]+'_'+labelsImg[3].split('.')[0]);
