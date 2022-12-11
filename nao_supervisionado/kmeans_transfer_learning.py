@@ -18,6 +18,13 @@ import os
 from vgg16_feature_extraction import vgg16_feature_extraction
 import glob
 from sklearn.metrics import confusion_matrix
+try:
+    from rembg import remove
+except ImportError:
+    import pip
+    pip.main(['install', '--user', 'rembg'])
+    from rembg import remove
+
 
 
 def image_to_pandas(image):
@@ -57,31 +64,95 @@ def load_images_from_folder_2(folder):
     return features,filenames,labels
 
 
+def load_images_from_folder_and_fourrier(folder):
+    labels_ = os.listdir(folder)
+    features = []
+    labels   = []
+    filenames = []
+    for i, label in enumerate(labels_):
+        cur_path = folder + "/" + label 
+        for image_path in glob.glob(cur_path + "/*"):
+            img = cv2.imread(os.path.join(folder,image_path))
+            if img is not None:
+                img = cv2.resize(img,(224,224), interpolation = cv2.INTER_AREA)
+                f = np.fft.fft2(img) # transformação de frequência
+                f_abs = abs(f)
+                f_norm =  f_abs/(f_abs.max()/255.0) 
+                fshift = np.fft.fftshift(f_norm) # componente de frequência no centro
+                spectrum = np.log(1+np.abs(fshift)).reshape(-1,1) # espectro de magnitude
+                filenames.append(image_path)
+                features.append(spectrum)
+                labels.append(label)
+    return features,filenames,labels
+
+def load_images_from_folder_and_fourrier_and_transfer(folder):
+    labels_ = os.listdir(folder)
+    features = []
+    labels   = []
+    filenames = []
+    for i, label in enumerate(labels_):
+        cur_path = folder + "/" + label 
+        for image_path in glob.glob(cur_path + "/*"):
+            img = cv2.imread(os.path.join(folder,image_path))
+            if img is not None:
+                img = cv2.resize(img,(224,224), interpolation = cv2.INTER_AREA)
+                f = np.fft.fft2(img) # transformação de frequência
+                f_abs = abs(f)
+                f_norm =  f_abs/(f_abs.max()/255.0) 
+                fshift = np.fft.fftshift(f_norm) # componente de frequência no centro
+                spectrum = np.log(1+np.abs(fshift)) # espectro de magnitude
+                parameter=vgg16_feature_extraction(spectrum).reshape(-1,1)
+                filenames.append(image_path)
+                features.append(parameter)
+                labels.append(label)
+    return features,filenames,labels          
+
+
+def load_images_from_folder_and_removebg(folder):
+    labels_ = os.listdir(folder)
+    features = []
+    labels   = []
+    filenames = []
+    for i, label in enumerate(labels_):
+        cur_path = folder + "/" + label 
+        for image_path in glob.glob(cur_path + "/*"):
+            img = cv2.imread(os.path.join(folder,image_path))
+            if img is not None:
+                output = remove(img)
+                new_path = os.path.join(folder,image_path).replace('.jpg','bg-removal.png').replace('dataset_separado','dataset_rotulado_sem_bg')
+                print(new_path)
+                cv2.imwrite(new_path,output)   
+
+
 
 #df,filenames = load_images_from_folder('C:\\Users\\lueli\\ProjetoPecem\\imagens_nao_rotuladas\\all')
 
 #df,filenames = load_images_from_folder('C:\\Users\\lueli\\ProjetoPecem\\imagens_nao_rotuladas\\dataset_rotulado')
+dataset_path = 'C:\\Users\\lueli\\ProjetoPecem\\imagens_nao_rotuladas\\dataset_rotulado\\dataset_separado'
 
+#load_images_from_folder_and_removebg(dataset_path)
 
-df,filenames,labels = load_images_from_folder_2('C:\\Users\\lueli\\ProjetoPecem\\imagens_nao_rotuladas\\dataset_rotulado\\dataset_separado')
+df,filenames,labels = load_images_from_folder_and_fourrier_and_transfer('C:\\Users\\lueli\\ProjetoPecem\\imagens_nao_rotuladas\\dataset_rotulado\\dataset_rotulado_sem_bg')
 
-
+print(labels)
 
 arr = np.array(df)
+print(arr.shape)
 
 arr2 = arr.reshape(40,4096)
-#df2 = pd.DataFrame(df)
 
 
 kmeans = KMeans(n_clusters=4, random_state = 42).fit(arr2)
 result = kmeans.labels_
 
+strings = [str(x) for x in result]
+print(strings)
 
-targetNames = ['Bom', 'Excelente', 'Ruim', 'Pessimo']
+targetNames = ['Excelente','Bom', 'Ruim', 'Pessimo']
 targetNames = np.array(sorted(targetNames))
 
 
-cm = confusion_matrix(labels, result)
+cm = confusion_matrix(labels, strings)
 title='Confusion matrix'
 cmap=plt.cm.Blues
 normalize = True
@@ -91,7 +162,7 @@ if normalize:
     print("Normalized confusion matrix")
 else:
     print('Confusion matrix, without normalization')
-tick_marks = [0,1,2,3,4,5,6,7,8]
+tick_marks = [0,1,2,3]
 plt.imshow(cm, interpolation='nearest', cmap=cmap)
 plt.title(title)
 plt.colorbar()
@@ -108,22 +179,5 @@ for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.tight_layout()
+plt.show()
 
-
-
-
-# open file in write mode
-with open(r'C:\\Users\\lueli\\ProjetoPecem\\kmeans_labes.txt', 'w') as fp:
-    for item in result:
-        # write each item on a new line
-        fp.write("%s\n" % item)
-    print('Done')
-    
-
-
-# open file in write mode
-with open(r'C:\\Users\\lueli\\ProjetoPecem\\filenames.txt', 'w') as fp:
-    for item in filenames:
-        # write each item on a new line
-        fp.write("%s\n" % item)
-    print('Done')    
