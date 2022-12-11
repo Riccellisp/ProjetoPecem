@@ -249,8 +249,6 @@ def main():
    
     
 
-
-
         img=st.image(images[st.session_state.count]) 
         imagem=images[st.session_state.count]
     
@@ -280,15 +278,18 @@ def main():
 
         st.markdown("<hr>",unsafe_allow_html=True)
         # botões classificacao via streamlit    
-        b1,b2,b3,b4=st.columns(4)
-        with b1:
-            st.button("Excelente", key="exe")
-        with b2:
-            st.button("Boa", key="boa")
-        with b3:
-            st.button("Ruim", key="rum")
-        with b4:
-            st.button("Pessima", key="pes")
+        c1,c2,c3,c4=st.columns(4)
+        with c1:
+            b1=st.button("Excelente", key="exe")
+        with c2:
+            b2=st.button("Boa", key="boa")
+        with c3:
+            b3=st.button("Ruim", key="rum")
+        with c4:
+            b4=st.button("Pessima", key="pes")
+        
+        if b1 or b2 or b3 or b4:
+            st.session_state.count += 1
         
     else:
         st.markdown("## A valiação concluida! ✅")
