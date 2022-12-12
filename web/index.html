@@ -1,0 +1,16 @@
+<script>
+	const streamlitDoc = window.parent.document;
+
+	buttons = Array.from(streamlitDoc.querySelectorAll(".stButton > button"));
+	console.log(buttons);
+	const b1=buttons.find((el)=> el.innerText === "Excelente")
+	const b2=buttons.find((el)=> el.innerText === "Boa")
+	const b3=buttons.find((el)=> el.innerText === "Ruim")
+	const b4=buttons.find((el)=> el.innerText === "Pessima")
+
+	b1.style.backgroundColor="#03FA3C"
+	b2.style.backgroundColor="#00FFA7"
+	b3.style.backgroundColor="#E3B805"
+	b4.style.backgroundColor="#FA1C07"
+	
+</script>
