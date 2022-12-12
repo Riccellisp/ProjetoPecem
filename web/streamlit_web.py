@@ -211,34 +211,54 @@ def load_model():
 
 def loadImages(path):
     '''
-    function to load all images from a folder, resize images to size 360x240 and return a list
-    if necessary, we might merge these function with apply_metric_list to save memory
+    Essa função organiza os paths de todas as imagens de um dataset com hierarquia informada abaixo
+    e retorna a lista de todos esses paths.
     @param path: str path for root_dataset_folder
     '''
     # root_dataset_folder
     #   # child_cam_folder
     #       # grandson_img_file
-    image_list = []
+    paths_list = []
     for cam_folder in sorted(os.listdir(path)):
         for class_folder in sorted(os.listdir(path+"/"+cam_folder)):
-            for image_paths in sorted(glob.glob(path+"/"+cam_folder+"/"+f"{class_folder}"+"/*")):
-                image = Image.open(image_paths)
-                image_list.append(image)
+            for image_path in sorted(glob.glob(path+"/"+cam_folder+"/"+f"{class_folder}"+"/*")):
+                # image = Image.open(image_path)
+                paths_list.append(image_path)
+    
+    return paths_list
 
-    return image_list
+# callbacks para botões:
+def confirma_callback():
+    st.session_state.count+=1
+def b1_callback():
+    st.session_state.count+=1
+def b2_callback():
+    st.session_state.count+=1
+def b3_callback():
+    st.session_state.count+=1
+def b4_callback():
+    st.session_state.count+=1
+
+def read_html():
+    with open("web\index.html") as f:
+        return f.read()
 
 def main():
     """Função responsável por gerar a pagina web"""
 
     model, imagenet_class_index = load_model()
-    #st.title("Sistema de Classificação Manual")
+    # Descrição
     #st.write("This application knows the objects in an image , but works best when only one object is in the image")
-    images=loadImages("dataset_pecem")
-    count = 0
+
+
+    if 'images' not in st.session_state:
+        images_paths=loadImages("dataset_pecem")
+        st.session_state.images=images_paths
     if 'count' not in st.session_state:
         st.session_state.count = 0
     
-    if st.session_state.count<len(images)-1:
+
+    if st.session_state.count<len(st.session_state.images)-1:
         with st.sidebar:
             # OBS: Ainda precisa automatizar esse processo das fixas
             imagens_fixas=[cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Bom/Imagem13.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Excelente/Imagem11.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Ruim/Imagem15.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Pessimo/Imagem17.jpg"),cv2.COLOR_BGR2RGB)]
@@ -247,57 +267,36 @@ def main():
             st.image(imagens_fixas[2],"Ruim")
             st.image(imagens_fixas[3],"Pessima")       
    
-    
+        print("Paths na session state:",st.session_state.images)
+        img=Image.open(st.session_state.images[st.session_state.count])
+        st.image(img) 
 
-        img=st.image(images[st.session_state.count]) 
-        imagem=images[st.session_state.count]
-    
     
         # botoes resultado e confimação
         c1,c2=st.columns(2)
         with c1:
-            prediction = get_prediction(imagem, model, imagenet_class_index)
+            prediction = get_prediction(img, model, imagenet_class_index)
             resultado=st.button(f"Classificação: {prediction}", key="previsao")
         with c2:
-            confirma_button=st.button("Confirmar", key="ok")
-
-
-        if confirma_button:
-            st.session_state.count += 1
-            print(st.session_state.count)
-        
-        
-        # botões das classes:
-        # html_string = """
-        #                 <style>
-        #                     button{
-        #                         background-color: black;
-        #                     }
-        #                 </style>
-        #                 <div id='menu_classificacao'>
-        #                     <button type='submit'>Excelente</button>
-        #                     <button type='submit'>Boa</button>
-        #                     <button type='submit'>Ruim</button>
-        #                     <button type='submit'>Pessima</button>
-        #                 </div>"""
-        # st.markdown(html_string, unsafe_allow_html=True)
-        st.write(st.session_state.count)
-
+            confirma_button=st.button("Confirmar", key="ok",on_click=confirma_callback)
         st.markdown("<hr>",unsafe_allow_html=True)
+
         # botões classificacao via streamlit    
         c1,c2,c3,c4=st.columns(4)
-        with c1:
-            b1=st.button("Excelente", key="exe")
-        with c2:
-            b2=st.button("Boa", key="boa")
-        with c3:
-            b3=st.button("Ruim", key="rum")
-        with c4:
-            b4=st.button("Pessima", key="pes")
+        with c1: b1=st.button("Excelente", key="exe",on_click=b1_callback)
+        with c2: b2=st.button("Boa", key="boa",on_click=b2_callback)
+        with c3: b3=st.button("Ruim", key="rum",on_click=b3_callback)
+        with c4: b4=st.button("Pessima", key="pes",on_click=b4_callback)
         
-        if b1 or b2 or b3 or b4:
-            st.session_state.count += 1
-        
+        # Estilos
+        with open("web\style.css") as css_file:
+            st.markdown(f"<style>{css_file.read()}</style>", unsafe_allow_html=True)
+
+        components.html(
+            read_html(),
+            height=0,
+            width=0,
+        )
     else:
         st.markdown("## A valiação concluida! ✅")
 
