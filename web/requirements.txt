@@ -3,7 +3,6 @@ pytorch_lightning
 torch
 scikit-learn
 streamlit
-streamlit-authenticator
 mysql-connector-python
 opencv-python-headless
 streamlit_authenticator
