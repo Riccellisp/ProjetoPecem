@@ -245,17 +245,6 @@ def loadImages(path,hierarchy):
                     paths_list.append(image_path)       
     return paths_list
 
-# callbacks para botões:
-def confirma_callback():
-    st.session_state.count+=1
-def b1_callback():
-    st.session_state.count+=1
-def b2_callback():
-    st.session_state.count+=1
-def b3_callback():
-    st.session_state.count+=1
-def b4_callback():
-    st.session_state.count+=1
 
 def read_html():
     with open("web/index.html") as f:
@@ -324,10 +313,51 @@ def main():
     elif authentication_status == None:
         st.warning('Please enter your username and password')
 
+# callbacks para botões:
+def confirma_callback():
+    """@param prediction: str"""
+    ev_string=f"ev_label_{st.session_state['name'][3]}" 
+    st.session_state.image_infos[ev_string][st.session_state.count]=st.session_state.prediction
+    st.session_state.image_infos.to_csv('web/db_pecem.csv',index=False)
+    st.session_state.count+=1
+    print(f"""-------------------------------------------------
+    O botão confirma foi clicado. Contador: {st.session_state.count}
+    -------------------------------------------------""")    
+def b1_callback():
+    ev_string=f"ev_label_{st.session_state['name'][3]}" 
+    st.session_state.image_infos[ev_string][st.session_state.count]="Excelente"
+    st.session_state.image_infos.to_csv('web/db_pecem.csv',index=False)
+    st.session_state.count+=1
+    print(f"""-------------------------------------------------
+    B1 foi clicado. Contador: {st.session_state.count}
+    -------------------------------------------------""") 
+def b2_callback():
+    ev_string=f"ev_label_{st.session_state['name'][3]}" 
+    st.session_state.image_infos[ev_string][st.session_state.count]="Boa"
+    st.session_state.image_infos.to_csv('web/db_pecem.csv',index=False)
+    st.session_state.count+=1
+    print(f"""-------------------------------------------------
+    B2 foi clicado. Contador: {st.session_state.count}
+    -------------------------------------------------""") 
+def b3_callback():
+    ev_string=f"ev_label_{st.session_state['name'][3]}" 
+    st.session_state.image_infos[ev_string][st.session_state.count]="Ruim"
+    st.session_state.image_infos.to_csv('web/db_pecem.csv',index=False)
+    st.session_state.count+=1
+    print(f"""-------------------------------------------------
+    B3 foi clicado. Contador: {st.session_state.count}
+    -------------------------------------------------""") 
+def b4_callback():
+    ev_string=f"ev_label_{st.session_state['name'][3]}" 
+    st.session_state.image_infos[ev_string][st.session_state.count]="Pessima"
+    st.session_state.image_infos.to_csv('web/db_pecem.csv',index=False)
+    st.session_state.count+=1
+    print(f"""-------------------------------------------------
+    B4 foi clicado. Contador: {st.session_state.count}
+    -------------------------------------------------""") 
+
 def pagina_web():
     """Função responsável por gerar a pagina web"""
-
-    
 
     model, imagenet_class_index = load_model()
     # Descrição
@@ -339,6 +369,11 @@ def pagina_web():
         st.session_state.image_infos=infos
     if 'count' not in st.session_state:
         st.session_state.count = 0
+    if 'resposta' not in st.session_state:
+        st.session_state.resposta=""
+    if 'prediction' not in st.session_state:
+        st.session_state.prediction=""
+
     csv_infos=st.session_state.image_infos
     counter=st.session_state.count
 
@@ -350,7 +385,7 @@ def pagina_web():
             st.image(Image.open(csv_infos.iloc[counter][6][1::]),"Ruim")
             st.image(Image.open(csv_infos.iloc[counter][7][1::]),"Pessima")    
     
-        print("Paths na session state:",*csv_infos['image_path'],sep="\n")
+        # print("Paths na session state:",*csv_infos['image_path'],sep="\n")
         img=Image.open('web/'+csv_infos['image_path'][counter][2::])
         st.image(img) 
 
@@ -358,6 +393,7 @@ def pagina_web():
         c1,c2=st.columns(2)
         with c1:
             prediction = get_prediction(img, model, imagenet_class_index)
+            st.session_state.prediction=prediction
             resultado=st.button(f"Classificação: {prediction}", key="previsao")
         with c2:
             confirma_button=st.button("Confirmar", key="ok",on_click=confirma_callback)
@@ -370,6 +406,9 @@ def pagina_web():
         with c3: b3=st.button("Ruim", key="rum",on_click=b3_callback)
         with c4: b4=st.button("Pessima", key="pes",on_click=b4_callback)
         
+        print(f"""-------------------------------------------------
+        Final do Código ->>>Contador: {st.session_state.count}
+        -------------------------------------------------""") 
         # Estilos
         components.html(
             read_html(),
