@@ -247,15 +247,32 @@ def loadImages(path,hierarchy):
 
 # callbacks para botões:
 def confirma_callback():
-    st.session_state.count+=1
+    ev_label = st.session_state.image_infos.iloc[st.session_state.count][8]
+    write_ev_label(ev_label)
+
 def b1_callback():
-    st.session_state.count+=1
+    ev_label = 'Excelente'
+    write_ev_label(ev_label)
+
 def b2_callback():
-    st.session_state.count+=1
+    ev_label = 'Bom'
+    write_ev_label(ev_label)
+
 def b3_callback():
-    st.session_state.count+=1
+    ev_label = 'Ruim'
+    write_ev_label(ev_label)
+
 def b4_callback():
-    st.session_state.count+=1
+    ev_label = 'Pessimo'
+    write_ev_label(ev_label)
+
+
+def write_ev_label(ev_label):
+    ev_string = f"ev_label_{st.session_state['name'][3]}"
+    st.session_state.image_infos[ev_string][st.session_state.count] = ev_label
+    st.session_state.image_infos.to_csv('web/db_pecem.csv', index=False)
+    st.session_state.count += 1
+
 
 def read_html():
     with open("web/index.html") as f:
@@ -338,24 +355,25 @@ def pagina_web():
     if 'count' not in st.session_state:
         st.session_state.count = 0
     csv_infos=st.session_state.image_infos
-    counter=st.session_state.count
 
     # pagina web
-    if counter<len(csv_infos)-1: # Assumindo as fixas do csv
+    if st.session_state.count<len(csv_infos)-1: # Assumindo as fixas do csv
         with st.sidebar:
-            st.image(Image.open(csv_infos.iloc[counter][4][1::]),"Excelente")
-            st.image(Image.open(csv_infos.iloc[counter][5][1::]),"Boa")
-            st.image(Image.open(csv_infos.iloc[counter][6][1::]),"Ruim")
-            st.image(Image.open(csv_infos.iloc[counter][7][1::]),"Pessima")    
+            st.image(Image.open(csv_infos.iloc[st.session_state.count][4][1::]), "Excelente")
+            st.image(Image.open(csv_infos.iloc[st.session_state.count][5][1::]), "Boa")
+            st.image(Image.open(csv_infos.iloc[st.session_state.count][6][1::]), "Ruim")
+            st.image(Image.open(csv_infos.iloc[st.session_state.count][7][1::]), "Pessima")
     
         print("Paths na session state:",*csv_infos['image_path'],sep="\n")
-        img=Image.open('web/'+csv_infos['image_path'][counter][2::])
+        img=Image.open('web/'+csv_infos['image_path'][st.session_state.count][2::])
         st.image(img) 
 
         # botoes resultado e confimação
         c1,c2=st.columns(2)
         with c1:
             prediction = get_prediction(img, model, imagenet_class_index)
+            st.session_state.image_infos['pred_label'][st.session_state.count] = f"{prediction}"
+            st.session_state.image_infos.to_csv('web/db_pecem.csv', index=False)
             resultado=st.button(f"Classificação: {prediction}", key="previsao")
         with c2:
             confirma_button=st.button("Confirmar", key="ok",on_click=confirma_callback)
@@ -374,6 +392,7 @@ def pagina_web():
             height=0,
             width=0,
         )
+        st.write(st.session_state.count)
     else:
         st.markdown("## A valiação concluida! ✅")
 
