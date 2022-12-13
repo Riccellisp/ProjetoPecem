@@ -315,7 +315,9 @@ def main():
     name, authentication_status, username = authenticator.login('Login', 'main')
 
     if authentication_status:
-        authenticator.logout('Logout', 'main')
+        c1,c2=st.columns([1,4])
+        with c1: authenticator.logout('Logout', 'main')
+        with c2: st.write('ID: ', st.session_state['name'])
         pagina_web()
     elif authentication_status == False:
         st.error('Username/password is incorrect')
@@ -325,7 +327,7 @@ def main():
 def pagina_web():
     """Função responsável por gerar a pagina web"""
 
-    st.write('ID: ', st.session_state['name'])
+    
 
     model, imagenet_class_index = load_model()
     # Descrição
