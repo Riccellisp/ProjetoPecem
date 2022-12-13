@@ -4,6 +4,7 @@ import json
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
+import streamlit_authenticator as stauth
 
 try: 
     import cv2 
@@ -261,7 +262,70 @@ def read_html():
         return f.read()
 
 def main():
+    """Funcao responsavel pela autenticacao do login"""
+
+    senha_global = '123'
+    names = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008']
+    usernames = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008']
+    passwords = [senha_global, senha_global, senha_global, senha_global, senha_global,
+                 senha_global, senha_global, senha_global]
+
+    hashed_passwords = stauth.Hasher(passwords).generate()
+
+    credentials = {
+        "usernames": {
+            usernames[0]: {
+                "name": names[0],
+                "password": hashed_passwords[0]
+            },
+            usernames[1]: {
+                "name": names[1],
+                "password": hashed_passwords[1]
+            },
+            usernames[2]: {
+                "name": names[2],
+                "password": hashed_passwords[2]
+            },
+            usernames[3]: {
+                "name": names[3],
+                "password": hashed_passwords[3]
+            },
+            usernames[4]: {
+                "name": names[4],
+                "password": hashed_passwords[4]
+            },
+            usernames[5]: {
+                "name": names[5],
+                "password": hashed_passwords[5]
+            },
+            usernames[6]: {
+                "name": names[6],
+                "password": hashed_passwords[6]
+            },
+            usernames[7]: {
+                "name": names[7],
+                "password": hashed_passwords[7]
+            }
+        }
+    }
+
+    authenticator = stauth.Authenticate(credentials, 'some_cookie_name', 'some_signature_key',
+                                        cookie_expiry_days=1)
+
+    name, authentication_status, username = authenticator.login('Login', 'main')
+
+    if authentication_status:
+        authenticator.logout('Logout', 'main')
+        pagina_web()
+    elif authentication_status == False:
+        st.error('Username/password is incorrect')
+    elif authentication_status == None:
+        st.warning('Please enter your username and password')
+
+def pagina_web():
     """Função responsável por gerar a pagina web"""
+
+    st.write('ID: ', st.session_state['name'])
 
     model, imagenet_class_index = load_model()
     # Descrição
