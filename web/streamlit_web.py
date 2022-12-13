@@ -3,6 +3,7 @@ import glob
 import json
 import streamlit as st
 import streamlit.components.v1 as components
+import pandas as pd
 
 try: 
     import cv2 
@@ -209,22 +210,38 @@ def load_model():
 
 
 
-def loadImages(path):
+def loadImages(path,hierarchy):
     '''
-    Essa função organiza os paths de todas as imagens de um dataset com hierarquia informada abaixo
-    e retorna a lista de todos esses paths.
+    Essa função organiza os paths de todas as imagens de um dataset com uma das hierarquias informadas 
+    abaixo e retorna a lista de todos esses paths.
     @param path: str path for root_dataset_folder
+    @param Hierarchy: int which specifies the hierarchy (1 or 2)
     '''
+    #--------------- Hierarchy 1 ----------------
     # root_dataset_folder
-    #   # child_cam_folder
-    #       # grandson_img_file
+    #      |- cam_folder
+    #           |-image_file
+    #           |-image_file
+    #           ...
+    # --------------- Hierarchy 2 ----------------
+    # root_dataset_folder
+    #      |- cam_folder
+    #           |-class_folder
+    #                 |-image_file
+    #                 |-image_file
+    #                 ...
     paths_list = []
-    for cam_folder in sorted(os.listdir(path)):
-        for class_folder in sorted(os.listdir(path+"/"+cam_folder)):
-            for image_path in sorted(glob.glob(path+"/"+cam_folder+"/"+f"{class_folder}"+"/*")):
+    if hierarchy==1:
+        for cam_folder in sorted(os.listdir(path)):
+            for image_path in sorted(glob.glob(path+"/"+f"{cam_folder}"+"/*")):
                 # image = Image.open(image_path)
                 paths_list.append(image_path)
-    
+    elif hierarchy==2:
+        for cam_folder in sorted(os.listdir(path)):
+            for class_folder in sorted(os.listdir(f"{path}/{cam_folder}")):
+                for image_path in sorted(glob.glob(f"{path}/{cam_folder}/{class_folder}/*")):
+                    # image = Image.open(image_path)
+                    paths_list.append(image_path)       
     return paths_list
 
 # callbacks para botões:
@@ -250,28 +267,27 @@ def main():
     # Descrição
     #st.write("This application knows the objects in an image , but works best when only one object is in the image")
 
-
-    if 'images' not in st.session_state:
-        images_paths=loadImages("dataset_pecem")
-        st.session_state.images=images_paths
+    # Variaveis de session_state
+    if 'image_infos' not in st.session_state:
+        infos=pd.read_csv("web/db_pecem.csv")
+        st.session_state.image_infos=infos
     if 'count' not in st.session_state:
         st.session_state.count = 0
-    
+    csv_infos=st.session_state.image_infos
+    counter=st.session_state.count
 
-    if st.session_state.count<len(st.session_state.images)-1:
+    # pagina web
+    if counter<len(csv_infos)-1: # Assumindo as fixas do csv
         with st.sidebar:
-            # OBS: Ainda precisa automatizar esse processo das fixas
-            imagens_fixas=[cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Bom/Imagem13.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Excelente/Imagem11.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Ruim/Imagem15.jpg"),cv2.COLOR_BGR2RGB),cv2.cvtColor(cv2.imread("dataset_pecem/cam_77_3/Pessimo/Imagem17.jpg"),cv2.COLOR_BGR2RGB)]
-            st.image(imagens_fixas[0],"Boa")
-            st.image(imagens_fixas[1],"Excelente")
-            st.image(imagens_fixas[2],"Ruim")
-            st.image(imagens_fixas[3],"Pessima")       
-   
-        print("Paths na session state:",st.session_state.images)
-        img=Image.open(st.session_state.images[st.session_state.count])
+            st.image(Image.open(csv_infos.iloc[counter][4][1::]),"Excelente")
+            st.image(Image.open(csv_infos.iloc[counter][5][1::]),"Boa")
+            st.image(Image.open(csv_infos.iloc[counter][6][1::]),"Ruim")
+            st.image(Image.open(csv_infos.iloc[counter][7][1::]),"Pessima")    
+    
+        print("Paths na session state:",*csv_infos['image_path'],sep="\n")
+        img=Image.open('web/'+csv_infos['image_path'][counter][2::])
         st.image(img) 
 
-    
         # botoes resultado e confimação
         c1,c2=st.columns(2)
         with c1:
@@ -289,9 +305,6 @@ def main():
         with c4: b4=st.button("Pessima", key="pes",on_click=b4_callback)
         
         # Estilos
-        with open("web\style.css") as css_file:
-            st.markdown(f"<style>{css_file.read()}</style>", unsafe_allow_html=True)
-
         components.html(
             read_html(),
             height=0,
