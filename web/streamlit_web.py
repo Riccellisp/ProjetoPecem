@@ -257,7 +257,7 @@ def b4_callback():
     st.session_state.count+=1
 
 def read_html():
-    with open("web\index.html") as f:
+    with open("web/index.html") as f:
         return f.read()
 
 def main():
