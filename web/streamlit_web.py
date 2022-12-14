@@ -173,10 +173,8 @@ class ClassificationModel(pl.LightningModule):
 
 def transform_image(image):
     """ Transform image to fit model
-
     Args:
         image (image): Input image from the user
-
     Returns:
         tensor: transformed image 
     """
@@ -188,7 +186,6 @@ def transform_image(image):
                                             [0.229, 0.224, 0.225])])
     return transformation(image).unsqueeze(0)
 
-
 def get_prediction(image, model, imagenet_class_index):
     tensor = transform_image(image=image)
     outputs = model.forward(tensor)
@@ -196,55 +193,16 @@ def get_prediction(image, model, imagenet_class_index):
     predicted_idx = str(y_hat.item())
     return imagenet_class_index[predicted_idx][1]
 
-
 @st.cache(suppress_st_warning=True)
 def load_model():
-
     ckpt_path = f'web/blur-detection-mobilenet-5358.ckpt'
     model_ft = ClassificationModel.load_from_checkpoint(ckpt_path)
     # Since we are using our model only for inference, switch to `eval` mode:
     model_ft.eval()
-
     imagenet_class_index = json.load(open(f"{os.getcwd()}/web/data/imagenet_class_index.json"))
     
     return model_ft, imagenet_class_index
-
-
-
-def loadImages(path,hierarchy):
-    '''
-    Essa função organiza os paths de todas as imagens de um dataset com uma das hierarquias informadas 
-    abaixo e retorna a lista de todos esses paths.
-    @param path: str path for root_dataset_folder
-    @param Hierarchy: int which specifies the hierarchy (1 or 2)
-    '''
-    #--------------- Hierarchy 1 ----------------
-    # root_dataset_folder
-    #      |- cam_folder
-    #           |-image_file
-    #           |-image_file
-    #           ...
-    # --------------- Hierarchy 2 ----------------
-    # root_dataset_folder
-    #      |- cam_folder
-    #           |-class_folder
-    #                 |-image_file
-    #                 |-image_file
-    #                 ...
-    paths_list = []
-    if hierarchy==1:
-        for cam_folder in sorted(os.listdir(path)):
-            for image_path in sorted(glob.glob(path+"/"+f"{cam_folder}"+"/*")):
-                # image = Image.open(image_path)
-                paths_list.append(image_path)
-    elif hierarchy==2:
-        for cam_folder in sorted(os.listdir(path)):
-            for class_folder in sorted(os.listdir(f"{path}/{cam_folder}")):
-                for image_path in sorted(glob.glob(f"{path}/{cam_folder}/{class_folder}/*")):
-                    # image = Image.open(image_path)
-                    paths_list.append(image_path)       
-    return paths_list
-
+#________________________________________________________________________________________________________
 # callbacks para botões:
 def confirma_callback():
     ev_label = st.session_state.image_infos.iloc[st.session_state.count][8]
@@ -266,18 +224,16 @@ def b4_callback():
     ev_label = 'Pessimo'
     write_ev_label(ev_label)
 
-
 def write_ev_label(ev_label):
     ev_string = f"ev_label_{st.session_state['name'][3]}"
     st.session_state.image_infos[ev_string][st.session_state.count] = ev_label
     st.session_state.image_infos.to_csv('web/db_pecem.csv', index=False)
     st.session_state.count += 1
 
-
 def read_html():
     with open("web/index.html") as f:
         return f.read()
-
+#________________________________________________________________________________________________________
 def main():
     """Funcao responsavel pela autenticacao do login"""
 
@@ -288,7 +244,6 @@ def main():
                  senha_global, senha_global, senha_global]
 
     hashed_passwords = stauth.Hasher(passwords).generate()
-
     credentials = {
         "usernames": {
             usernames[0]: {
@@ -326,13 +281,15 @@ def main():
         }
     }
 
-    authenticator = stauth.Authenticate(credentials, 'some_cookie_name', 'some_signature_key',
-                                        cookie_expiry_days=1)
+    authenticator = stauth.Authenticate(credentials,'some_cookie_name','some_signature_key',
+    cookie_expiry_days=1)
 
-    name, authentication_status, username = authenticator.login('Login', 'main')
+    name,authentication_status,username = authenticator.login('Login', 'main')
 
     if authentication_status:
-        authenticator.logout('Logout', 'main')
+        col1,col2=st.columns([1,4])
+        with col1: authenticator.logout('Logout', 'main')
+        with col2: st.write('ID: ', st.session_state['name'])
         pagina_web()
     elif authentication_status == False:
         st.error('Username/password is incorrect')
@@ -341,9 +298,6 @@ def main():
 
 def pagina_web():
     """Função responsável por gerar a pagina web"""
-
-    st.write('ID: ', st.session_state['name'])
-
     model, imagenet_class_index = load_model()
     # Descrição
     #st.write("This application knows the objects in an image , but works best when only one object is in the image")
@@ -357,14 +311,13 @@ def pagina_web():
     csv_infos=st.session_state.image_infos
 
     # pagina web
-    if st.session_state.count<len(csv_infos)-1: # Assumindo as fixas do csv
+    if st.session_state.count<len(csv_infos)-1: # Verificar se a avaliação foi completa
         with st.sidebar:
             st.image(Image.open(csv_infos.iloc[st.session_state.count][4][1::]), "Excelente")
             st.image(Image.open(csv_infos.iloc[st.session_state.count][5][1::]), "Boa")
             st.image(Image.open(csv_infos.iloc[st.session_state.count][6][1::]), "Ruim")
             st.image(Image.open(csv_infos.iloc[st.session_state.count][7][1::]), "Pessima")
     
-        print("Paths na session state:",*csv_infos['image_path'],sep="\n")
         img=Image.open('web/'+csv_infos['image_path'][st.session_state.count][2::])
         st.image(img) 
 
@@ -390,9 +343,8 @@ def pagina_web():
         components.html(
             read_html(),
             height=0,
-            width=0,
-        )
-        st.write(st.session_state.count)
+            width=0,)
+            
     else:
         st.markdown("## A valiação concluida! ✅")
 
