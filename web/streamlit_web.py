@@ -27,8 +27,8 @@ import torch.nn as nn
 
 @st.experimental_singleton
 def init_connection():
-    return mysql.connector.connect(host="200.17.37.126", port=3306, database="pets", user="0001",
-                                   password="", auth_plugin='mysql_native_password')
+    return mysql.connector.connect(host="sql10.freesqldatabase.com", port=3306, database="sql10584922", user="sql10584922",
+                                   password="AJXVfXtTFY", auth_plugin='mysql_native_password')
 
 conn = init_connection()
 cur = conn.cursor(buffered=True)
