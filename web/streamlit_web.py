@@ -30,20 +30,8 @@ def init_connection():
     return mysql.connector.connect(host="sql10.freesqldatabase.com", port=3306, database="sql10584922", user="sql10584922",
                                    password="AJXVfXtTFY", auth_plugin='mysql_native_password')
 
-#conn = init_connection()
-#cur = conn.cursor(buffered=True)
-
-
-config = {
-'user': 'sql10584922',
-'password': 'AJXVfXtTFY',
-'host': 'sql10.freesqldatabase.com',
-'port': '3306',
-'database': 'sql10584922',
-'raise_on_warnings': True,}
-
-conn = mysql.connector.connect(**config)    
-cur = conn.cursor()
+conn = init_connection()
+cur = conn.cursor(buffered=True)
 
 def set_parameter_requires_grad(model, feature_extracting):
     if feature_extracting:
