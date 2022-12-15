@@ -31,6 +31,7 @@ def init_connection():
                                    password="AJXVfXtTFY", auth_plugin='mysql_native_password')
 
 conn = init_connection()
+conn.reconnect()
 cur = conn.cursor(buffered=True)
 
 def set_parameter_requires_grad(model, feature_extracting):
