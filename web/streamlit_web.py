@@ -226,6 +226,7 @@ def load_model():
 def confirma_callback():
     ev_string = f"ev_label_{st.session_state['name'][3]}"
     sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
+    conn.reconnect()
     cur.execute(sql, (st.session_state.prediction, st.session_state.image_infos.iloc[st.session_state.count][0]))
     conn.commit()
     st.session_state.count += 1
@@ -234,6 +235,7 @@ def b1_callback():
     ev_label = 'Excelente'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
     sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
+    conn.reconnect()
     cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
     conn.commit()
     st.session_state.count += 1
@@ -242,6 +244,7 @@ def b2_callback():
     ev_label = 'Bom'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
     sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
+    conn.reconnect()
     cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
     conn.commit()
     st.session_state.count += 1
@@ -250,6 +253,7 @@ def b3_callback():
     ev_label = 'Ruim'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
     sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
+    conn.reconnect()
     cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
     conn.commit()
     st.session_state.count += 1
@@ -258,6 +262,7 @@ def b4_callback():
     ev_label = 'Pessimo'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
     sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
+    conn.reconnect()
     cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
     conn.commit()
     st.session_state.count += 1
@@ -366,6 +371,7 @@ def pagina_web():
             prediction = get_prediction(img, model, imagenet_class_index)
             st.session_state.prediction = f'{prediction}'
             sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
+            conn.reconnect()
             cur.execute(sql, (f'{prediction}', csv_infos.iloc[st.session_state.count][0]))
             conn.commit()
             resultado = st.button(f"Classificação: {prediction}", key="previsao")
