@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "dbpecem",
+  "private_key_id": "cf62256085c77b34e1c48c8639cb4657645e2980",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDnuMPfqVeqL00z\nGDi75M/Pdy1Qn8Wa/l/nLfRjB1QO5MgAn50npLD+2/VPj6RQCv+rIln8FTLjIxRv\nHyk0gzlUev067H6HvTvLHzebsh32UcBJqHBWSbZ4gMhEMvvQTPmCH5VUyw9zug7S\nViuMvZu8GMWsxs6XZioLlPe0TQksAS2kJR/kdtyhFhrLCX9xfx1/B4GjUkakRUUo\nFCr8bQv/R7V/9tqK5MJ/0zlmuQDFor9wwWjzNG9UHRp0Kf1DJKr0GZKQII43nGYF\nfXoZr50OapH55CUDE/zQCcvMpACMnGbmxrRBnL9Ip7jsyrW0O1oScVm9EJnMetwe\nU8zYmiuDAgMBAAECggEACqQyjUKX8wnUZW9MU7H7VSS89lc6r5Z/ovyPnOieP0eE\nY9BGBacLiyNgzZ7kGy+WHtl8q8CcI1Azb7L3pSC4RkfrpIQYf3VSRKQSCAVoWNfX\nmR+yIP77m+cWIK5StXXY03/4efoP+JmSdVhdtvXngVOF6HGs1R5s+eEvyvOVYz7d\nkXJ5FPEt/8cCo1qBhNBD4uhh/bLob1Rx0KwbBgdegddv/6L/73Lyhz8wQd5/020e\nstm4V/b6Y5Aq29dDvBAFN7nMHU5KpfLd8hvmtOWTWB+2+bIqYekNA9RFyn0RjrrL\n115LAX8GY5hKxUzWNR8IdxcKIRrABaYxnKjgCHXD2QKBgQD2tBYEAByblpCI/rN2\nCMHdfaWxqmoGbXscNbikr4W8O1yK60Td349Zs5efBj4Y+Y+LW4EEXWKtDOxT+dps\natonPuBnZbniOhM2Jl+zIFlEXVnZgUPwYTnlwTQb5XqMmCWjFFL7Epc9oVSyXiFA\nKyaWXmGw8p28NGDIKbFsV/vv7wKBgQDwdCcM+KjTUX0dAl1kHKEteeNdwlYNC3n3\nEE4ccmjeMXrJzjIJned8g9fXpJrbYoVmKDZlZ+qt9agMmCC0tknIJT69SeUoqrN4\nbdvX+YMCqmW29j8ProRp1K+57pLza1F9H7PpSddFuButemxCIokwZgwYt28cuxl9\nGe8R4RBprQKBgFoVmnBthgS+bxrHPsrcGcaCSg3dN4gPVEQRzdG9Ei2Q05Mao/QM\n3XCY5sW35tcB0gvGJw9r9ktQi7+CXeL3BaANEq5O9BiKslc0nf9v0YjoOZX14NQW\n/KhL63ZAToamTCAHnOF3gWiMz7uuKaAf4aBI6I1Pmo+N5MVSjCoO2r1bAoGAQV+z\nBknMzLdJBswPzBokkBKliGY/swg9vrhGJGHOtSpKsfdHj2nI+Ad4dX6hQ6hDkIS6\nVVOtcGJrsBDkQ32UDcBikGA415ehd8qWjN+fiOf/A4Frn73Y7lUO+cQtW9T/sL8f\n0Ptsdd4aWE4ChPCSz//OpiGpKeyMf4C/iOLh7XkCgYAB8ADK39WRc1nU1/eAnElL\ndpQoXVvY04wY9sHu1Jxf4vh/1oq6iojuR9TS/1naXAMSsCRIkJQgBxYa3SGkg+bH\n04hNXQBGYUXWWleJiqZU8Zf9h83dcNnecXlBSqfeJwJpSx9NeujLkITqipSSK6Aw\nrt8g3aWpVzVvzvg9kkeM7Q==\n-----END PRIVATE KEY-----\n",
+  "client_email": "db-pecem-520@dbpecem.iam.gserviceaccount.com",
+  "client_id": "104239210934797918115",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/db-pecem-520%40dbpecem.iam.gserviceaccount.com"
+}
