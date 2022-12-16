@@ -226,6 +226,12 @@ def load_model():
 
 # ________________________________________________________________________________________________________
 # callbacks para botões:
+def voltar_callback():
+    if st.session_state.count==0:
+        st.write("Realize ao menos uma avaliação!")
+    else:
+        st.session_state.count -= 1
+
 def confirma_callback():
     ev_string = f"ev_label_{st.session_state['name'][3]}"
     #sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
@@ -237,7 +243,7 @@ def confirma_callback():
     sh = gc.open('teste_pecem')
     wks = sh[0]
     csv_infos = wks.get_as_df()
-    #csv_infos = st.session_state.image_infos
+    #csv_infos = st.session_state.image_infos 
     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = st.session_state.prediction
     wks.set_dataframe(csv_infos,(0,0))
@@ -315,10 +321,25 @@ def read_html():
         return f.read()
 
 
+
+#gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+sh = gc.open('teste_pecem')
+wks = sh[0]
+# Variaveis de session_state
+if 'image_infos' not in st.session_state:
+    sh = gc.open('teste_pecem')
+    wks = sh[0]
+    infos = wks.get_as_df() # create the dataframe 
+    st.session_state.image_infos = infos
+if 'count' not in st.session_state:
+    st.session_state.count = 0
+
+
+
 # ________________________________________________________________________________________________________
 def main():
-    """Funcao responsavel pela autenticacao do login"""
-
+    """Funcao responsavel por autenticacao do login"""
     senha_global = '123'
     names = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008']
     usernames = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008']
@@ -373,7 +394,11 @@ def main():
         with col1:
             authenticator.logout('Logout', 'main')
         with col2:
-            st.write('ID: ', st.session_state['name'])
+            # Verificar se a avaliação foi completa:
+            while not(st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name[3]}"])=="":
+                st.session_state.count+=1
+            st.write(f"Concluídas: {st.session_state.count}/{len(st.session_state.image_infos)}")
+            
         pagina_web()
     elif authentication_status == False:
         st.error('Username/password is incorrect')
@@ -383,68 +408,44 @@ def main():
 
 def pagina_web():
     """Função responsável por gerar a pagina web"""
-
-    model, imagenet_class_index = load_model()
-    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
-    sh = gc.open('teste_pecem')
-    wks = sh[0]
-
-    # Descrição
-    # st.write("This application knows the objects in an image , but works best when only one object is in the image")
-
-    # Variaveis de session_state
-    if 'image_infos' not in st.session_state:
-        #infos = pd.read_csv("web/db_pecem.csv")
-        sh = gc.open('teste_pecem')
-        wks = sh[0]
-        infos = wks.get_as_df() # create the dataframe 
-        #infos = pd.DataFrame(aux)[1:]
-        
-
-        st.session_state.image_infos = infos
-    if 'count' not in st.session_state:
-        st.session_state.count = 0
-    csv_infos = st.session_state.image_infos
+    model, imagenet_class_index = load_model() 
 
     # pagina web
-    if st.session_state.count < len(csv_infos) - 1:  # Verificar se a avaliação foi completa
+    if st.session_state.count < len(st.session_state.image_infos) - 1:  # Verificar se a avaliação foi completa
         with st.sidebar:
-            st.image(Image.open(csv_infos.iloc[st.session_state.count][4][1::]), "Excelente")
-            st.image(Image.open(csv_infos.iloc[st.session_state.count][5][1::]), "Boa")
-            st.image(Image.open(csv_infos.iloc[st.session_state.count][6][1::]), "Ruim")
-            st.image(Image.open(csv_infos.iloc[st.session_state.count][7][1::]), "Pessima")
+            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][4][1::]), "Excelente")
+            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][5][1::]), "Boa")
+            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][6][1::]), "Ruim")
+            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][7][1::]), "Pessima")
 
-        img = Image.open('web/' + csv_infos['image_path'][st.session_state.count][2::])
-        #img = Image.open(csv_infos['image_path'][st.session_state.count][2::])
+        img = Image.open('web/' + st.session_state.image_infos['image_path'][st.session_state.count][2::])
+        #img = Image.open(st.session_state.image_infos['image_path'][st.session_state.count][2::])
+        prediction = get_prediction(img, model, imagenet_class_index)
+        st.session_state.prediction = f'{prediction}'
         st.image(img)
-
-        # botoes resultado e confimação
-        c1, c2 = st.columns(2)
-        with c1:
-            prediction = get_prediction(img, model, imagenet_class_index)
-            st.session_state.prediction = f'{prediction}'
-            #sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
-            #cur.execute(sql, (f'{prediction}', csv_infos.iloc[st.session_state.count][0]))
-            #conn.commit()
-            #print(csv_infos['image_path'][st.session_state.count])
-            #csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
-            #wks.set_dataframe(csv_infos,(0,0))
-            resultado = st.button(f"Classificação: {prediction}", key="previsao")
-        with c2:
-            confirma_button = st.button("Confirmar", key="ok", on_click=confirma_callback)
-        st.markdown("<hr>", unsafe_allow_html=True)
 
         # botões classificacao via streamlit
         c1, c2, c3, c4 = st.columns(4)
-        with c1:
+        with c1: 
             b1 = st.button("Excelente", key="exe", on_click=b1_callback)
-        with c2:
+        with c2: 
             b2 = st.button("Boa", key="boa", on_click=b2_callback)
-        with c3:
+        with c3: 
             b3 = st.button("Ruim", key="rum", on_click=b3_callback)
-        with c4:
-            b4 = st.button("Pessima", key="pes", on_click=b4_callback)
+        with c4: 
+            b4 = st.button("Pessima", key="pes", on_click=b4_callback)  
+
+        st.markdown("<hr>", unsafe_allow_html=True)
+
+        # botao de voltar
+        c1,c2,c3,c4=st.columns(4)
+        with c4: voltar_button = st.button("Voltar", key="back", on_click=voltar_callback)
+        #sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
+        #cur.execute(sql, (f'{prediction}', st.session_state.image_infos.iloc[st.session_state.count][0]))
+        #conn.commit()
+        #print(st.session_state.image_infos['image_path'][st.session_state.count])
+        #st.session_state.image_infos.loc[st.session_state.image_infos['image_path']==st.session_state.image_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
+        #wks.set_dataframe(st.session_state.image_infos,(0,0))
 
         # Estilos
         components.html(
@@ -454,7 +455,7 @@ def pagina_web():
         )
 
     else:
-        st.markdown("## A valiação concluida! ✅")
+        st.markdown("## A valiação foi concluida! ✅")
 
 
 if __name__ == '__main__':
