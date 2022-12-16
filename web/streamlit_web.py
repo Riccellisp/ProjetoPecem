@@ -8,7 +8,6 @@ import streamlit_authenticator as stauth
 #import mysql.connector
 import pygsheets
 
-
 try:
     import cv2
 except ImportError:
@@ -27,24 +26,14 @@ from torchvision import models  # torchvision
 from torchvision import models
 import torch.nn as nn
 
-<<<<<<< HEAD
 # @st.experimental_singleton
 # def init_connection():
-#     return mysql.connector.connect(host="200.17.37.126", port=3306, database="pets", user="0001",
-#                                    password="", auth_plugin='mysql_native_password')
+#     return mysql.connector.connect(host="sql10.freesqldatabase.com", port=3306, database="sql10584922", user="sql10584922",
+#                                    password="AJXVfXtTFY", auth_plugin='mysql_native_password')
 
 # conn = init_connection()
+# conn.reconnect()
 # cur = conn.cursor(buffered=True)
-=======
-@st.experimental_singleton
-def init_connection():
-    return mysql.connector.connect(host="sql10.freesqldatabase.com", port=3306, database="sql10584922", user="sql10584922",
-                                   password="AJXVfXtTFY", auth_plugin='mysql_native_password')
-
-conn = init_connection()
-conn.reconnect()
-cur = conn.cursor(buffered=True)
->>>>>>> ca3ed39f1f6156e79f8213c86fe597d384198969
 
 def set_parameter_requires_grad(model, feature_extracting):
     if feature_extracting:
@@ -239,7 +228,6 @@ def load_model():
 # callbacks para botões:
 def confirma_callback():
     ev_string = f"ev_label_{st.session_state['name'][3]}"
-<<<<<<< HEAD
     #sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
     #cur.execute(sql, (st.session_state.prediction, st.session_state.image_infos.iloc[st.session_state.count][0]))
     #conn.commit()
@@ -254,18 +242,11 @@ def confirma_callback():
     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = st.session_state.prediction
     wks.set_dataframe(csv_infos,(0,0))
 
-=======
-    sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
-    conn.reconnect()
-    cur.execute(sql, (st.session_state.prediction, st.session_state.image_infos.iloc[st.session_state.count][0]))
-    conn.commit()
->>>>>>> ca3ed39f1f6156e79f8213c86fe597d384198969
     st.session_state.count += 1
 
 def b1_callback():
     ev_label = 'Excelente'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
-<<<<<<< HEAD
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -277,18 +258,11 @@ def b1_callback():
     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
     wks.set_dataframe(csv_infos,(0,0))
 
-=======
-    sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
-    conn.reconnect()
-    cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
-    conn.commit()
->>>>>>> ca3ed39f1f6156e79f8213c86fe597d384198969
     st.session_state.count += 1
 
 def b2_callback():
     ev_label = 'Bom'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
-<<<<<<< HEAD
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -300,18 +274,11 @@ def b2_callback():
     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
     wks.set_dataframe(csv_infos,(0,0))
 
-=======
-    sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
-    conn.reconnect()
-    cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
-    conn.commit()
->>>>>>> ca3ed39f1f6156e79f8213c86fe597d384198969
     st.session_state.count += 1
 
 def b3_callback():
     ev_label = 'Ruim'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
-<<<<<<< HEAD
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -323,18 +290,11 @@ def b3_callback():
     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
     wks.set_dataframe(csv_infos,(0,0))
 
-=======
-    sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
-    conn.reconnect()
-    cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
-    conn.commit()
->>>>>>> ca3ed39f1f6156e79f8213c86fe597d384198969
     st.session_state.count += 1
 
 def b4_callback():
     ev_label = 'Pessimo'
     ev_string = f"ev_label_{st.session_state['name'][3]}"
-<<<<<<< HEAD
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -346,12 +306,6 @@ def b4_callback():
     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
     wks.set_dataframe(csv_infos,(0,0))
 
-=======
-    sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
-    conn.reconnect()
-    cur.execute(sql, (ev_label, st.session_state.image_infos.iloc[st.session_state.count][0]))
-    conn.commit()
->>>>>>> ca3ed39f1f6156e79f8213c86fe597d384198969
     st.session_state.count += 1
 
 
@@ -470,19 +424,12 @@ def pagina_web():
         with c1:
             prediction = get_prediction(img, model, imagenet_class_index)
             st.session_state.prediction = f'{prediction}'
-<<<<<<< HEAD
             #sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
             #cur.execute(sql, (f'{prediction}', csv_infos.iloc[st.session_state.count][0]))
             #conn.commit()
             #print(csv_infos['image_path'][st.session_state.count])
             #csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
             #wks.set_dataframe(csv_infos,(0,0))
-=======
-            sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
-            conn.reconnect()
-            cur.execute(sql, (f'{prediction}', csv_infos.iloc[st.session_state.count][0]))
-            conn.commit()
->>>>>>> ca3ed39f1f6156e79f8213c86fe597d384198969
             resultado = st.button(f"Classificação: {prediction}", key="previsao")
         with c2:
             confirma_button = st.button("Confirmar", key="ok", on_click=confirma_callback)
