@@ -317,9 +317,8 @@ def b4_callback():
 
 def read_html():
     #with open("web/index.html") as f:
-    with open("index.html") as f:
+    with open("web/index.html") as f:
         return f.read()
-
 
 
 #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
@@ -334,6 +333,7 @@ if 'image_infos' not in st.session_state:
     st.session_state.image_infos = infos
 if 'count' not in st.session_state:
     st.session_state.count = 0
+
 
 
 
@@ -388,15 +388,15 @@ def main():
                                         cookie_expiry_days=1)
 
     name, authentication_status, username = authenticator.login('Login', 'main')
+    # Verificar se a avaliação foi completa:
+    while name!=None and not(st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name[3]}"])=="":
+        st.session_state.count+=1
 
     if authentication_status:
         col1, col2 = st.columns([1, 4])
         with col1:
             authenticator.logout('Logout', 'main')
         with col2:
-            # Verificar se a avaliação foi completa:
-            while not(st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name[3]}"])=="":
-                st.session_state.count+=1
             st.write(f"Concluídas: {st.session_state.count}/{len(st.session_state.image_infos)}")
             
         pagina_web()
@@ -419,7 +419,6 @@ def pagina_web():
             st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][7][1::]), "Pessima")
 
         img = Image.open('web/' + st.session_state.image_infos['image_path'][st.session_state.count][2::])
-        #img = Image.open(st.session_state.image_infos['image_path'][st.session_state.count][2::])
         prediction = get_prediction(img, model, imagenet_class_index)
         st.session_state.prediction = f'{prediction}'
         st.image(img)
