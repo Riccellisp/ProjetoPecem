@@ -445,17 +445,20 @@ def pagina_web():
     if st.session_state.count < len(st.session_state.image_infos) - 1:  # Verificar se a avaliação foi completa
         while not (st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name}"]) == "":
             st.session_state.count += 1
-
+        # header acima da imagem principal
         col1, col2, col3,col4=st.columns([3,4,1,1])
         with col1:
             st.session_state.authentication.logout('Logout', 'main')
         with col2:
-            st.button(f"{st.session_state.image_infos.iloc[st.session_state.count][2]} | Concluídas: {st.session_state.count}/{len(st.session_state.image_infos)}")
-            
+            total=len(st.session_state.image_infos.loc[st.session_state.image_infos['cam_num']==st.session_state.image_infos.iloc[st.session_state.count][2]])-1
+            # concluido=st.session_state.count 
+            # if st.session_state.image_infos.iloc[0][2].split('_')[0]=='cam' and st.session_state.image_infos.iloc[st.session_state.count][2]!=st.session_state.image_infos.iloc[st.session_state.count-1][2]:
+            #     concluido=0
+            # st.button(f"{st.session_state.image_infos.iloc[st.session_state.count][2]} | Concluídas: {concluido}/{total}")  
+            st.button(f"{st.session_state.image_infos.iloc[st.session_state.count][2]} | Total de Imagens: {total}")  
         with col3:
             logoPecem=Image.open("web/logos/logoPecem.jpg")
             st.image(logoPecem,width=60)
-
         with col4:
             logoLesc=Image.open("web/logos/logoLesc.png")
             st.image(logoLesc,width=40)
@@ -506,6 +509,8 @@ def pagina_web():
             height=0,
             width=0,
         )
+
+        print("Contador:",st.session_state.count)
 
     else:
         st.markdown("## A valiação foi concluida! ✅")
