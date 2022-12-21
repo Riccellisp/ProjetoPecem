@@ -475,7 +475,7 @@ def pagina_web():
             if st.button("Ruim", key="rum"):
                 b3_callback()
         with c4:
-            if st.button("Pessima", key="pes", on_click=b4_callback):
+            if st.button("Pessima", key="pes"):
                 b4_callback()
 
         st.markdown("<hr>", unsafe_allow_html=True)
