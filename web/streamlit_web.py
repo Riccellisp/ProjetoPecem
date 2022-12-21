@@ -233,7 +233,7 @@ def voltar_callback():
         st.session_state.count -= 1
 
         ev_label = ''
-        ev_string = f"ev_label_{st.session_state['name'][3]}"
+        ev_string = f"ev_label_{st.session_state['name']}"
 
         # gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
         gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -267,7 +267,7 @@ def voltar_callback():
 
 def b1_callback():
     ev_label = 'Excelente'
-    ev_string = f"ev_label_{st.session_state['name'][3]}"
+    ev_string = f"ev_label_{st.session_state['name']}"
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -283,7 +283,7 @@ def b1_callback():
 
 def b2_callback():
     ev_label = 'Bom'
-    ev_string = f"ev_label_{st.session_state['name'][3]}"
+    ev_string = f"ev_label_{st.session_state['name']}"
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -299,7 +299,7 @@ def b2_callback():
 
 def b3_callback():
     ev_label = 'Ruim'
-    ev_string = f"ev_label_{st.session_state['name'][3]}"
+    ev_string = f"ev_label_{st.session_state['name']}"
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -315,7 +315,7 @@ def b3_callback():
 
 def b4_callback():
     ev_label = 'Pessimo'
-    ev_string = f"ev_label_{st.session_state['name'][3]}"
+    ev_string = f"ev_label_{st.session_state['name']}"
     
     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
@@ -349,10 +349,16 @@ wks = sh[0]
 def main():
     """Funcao responsavel por autenticacao do login"""
     senha_global = '123'
-    names = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008']
-    usernames = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008']
+    names = ['teste', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+    usernames = ['teste',
+                 'marcio.mamede@complexodopecem.com.br', 'jairo.torres@complexodopecem.com.br',
+                 'rodrigo.nagy@complexodopecem.com.br', 'italo.silva@complexodopecem.com.br',
+                 'vladia.pontes@complexodopecem.com.br', 'rene.silva@complexodopecem.com.br',
+                 'lucas.moura@compexodopecem.com.br', 'pedro.castro@complexodopecem.com.br',
+                 'david@dtrtecnologia.com.br', 'ismaelcavalcante@dtrtecnologia.com.br']
     passwords = [senha_global, senha_global, senha_global, senha_global, senha_global,
-                 senha_global, senha_global, senha_global]
+                 senha_global, senha_global, senha_global, senha_global, senha_global,
+                 senha_global, senha_global]
 
     hashed_passwords = stauth.Hasher(passwords).generate()
     credentials = {
@@ -388,6 +394,18 @@ def main():
             usernames[7]: {
                 "name": names[7],
                 "password": hashed_passwords[7]
+            },
+            usernames[8]: {
+                "name": names[8],
+                "password": hashed_passwords[8]
+            },
+            usernames[9]: {
+                "name": names[9],
+                "password": hashed_passwords[9]
+            },
+            usernames[10]: {
+                "name": names[10],
+                "password": hashed_passwords[10]
             }
         }
     }
@@ -425,7 +443,7 @@ def pagina_web():
 
     # pagina web
     if st.session_state.count < len(st.session_state.image_infos) - 1:  # Verificar se a avaliação foi completa
-        while not (st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name[3]}"]) == "":
+        while not (st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name}"]) == "":
             st.session_state.count += 1
 
         col1, col2, col3,col4=st.columns([3,4,1,1])
