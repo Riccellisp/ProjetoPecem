@@ -428,11 +428,19 @@ def pagina_web():
         while not (st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name[3]}"]) == "":
             st.session_state.count += 1
 
-        col1, col2 = st.columns([1, 4])
+        col1, col2, col3,col4=st.columns([3,4,1,1])
         with col1:
             st.session_state.authentication.logout('Logout', 'main')
         with col2:
-            st.write(f"Concluídas: {st.session_state.count}/{len(st.session_state.image_infos)}")
+            st.button(f"{st.session_state.image_infos.iloc[st.session_state.count][2]} | Concluídas: {st.session_state.count}/{len(st.session_state.image_infos)}")
+            
+        with col3:
+            logoPecem=Image.open("web/logos/logoPecem.jpg")
+            st.image(logoPecem,width=60)
+
+        with col4:
+            logoLesc=Image.open("web/logos/logoLesc.png")
+            st.image(logoLesc,width=40)
 
         with st.sidebar:
             st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][4][1::]), "Excelente")
