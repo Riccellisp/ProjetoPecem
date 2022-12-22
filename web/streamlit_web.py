@@ -477,25 +477,20 @@ def pagina_web():
         # botões classificacao via streamlit
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            if st.button("Excelente", key="exe"):
-                b1_callback()
+            st.button("Excelente", key="exe", on_click=b1_callback)
         with c2:
-            if st.button("Boa", key="boa"):
-                b2_callback()
+            st.button("Boa", key="boa", on_click=b2_callback)
         with c3:
-            if st.button("Ruim", key="rum"):
-                b3_callback()
+            st.button("Ruim", key="rum", on_click=b3_callback)
         with c4:
-            if st.button("Pessima", key="pes"):
-                b4_callback()
+            st.button("Pessima", key="pes", on_click=b4_callback)
 
         st.markdown("<hr>", unsafe_allow_html=True)
 
         # botao de voltar
-        c1,c2,c3,c4=st.columns(4)
+        c1, c2, c3, c4=st.columns(4)
         with c4:
-            if st.button("Voltar", key="back"):
-                voltar_callback()
+            st.button("Voltar", key="back", on_click=voltar_callback)
         #sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
         #cur.execute(sql, (f'{prediction}', st.session_state.image_infos.iloc[st.session_state.count][0]))
         #conn.commit()
