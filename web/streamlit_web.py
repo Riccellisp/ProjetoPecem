@@ -349,8 +349,8 @@ wks = sh[0]
 def main():
     """Funcao responsavel por autenticacao do login"""
     senha_global = '123'
-    names = ['teste', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-    usernames = ['teste',
+    names = ['teste', 'teste2', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+    usernames = ['teste', 'teste2',
                  'marcio.mamede@complexodopecem.com.br', 'jairo.torres@complexodopecem.com.br',
                  'rodrigo.nagy@complexodopecem.com.br', 'italo.silva@complexodopecem.com.br',
                  'vladia.pontes@complexodopecem.com.br', 'rene.silva@complexodopecem.com.br',
@@ -406,6 +406,10 @@ def main():
             usernames[10]: {
                 "name": names[10],
                 "password": hashed_passwords[10]
+            },
+            usernames[11]: {
+                "name": names[11],
+                "password": hashed_passwords[11]
             }
         }
     }
@@ -478,25 +482,20 @@ def pagina_web():
         # botões classificacao via streamlit
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            if st.button("Excelente", key="exe"):
-                b1_callback()
+            st.button("Excelente", key="exe", on_click=b1_callback)
         with c2:
-            if st.button("Boa", key="boa"):
-                b2_callback()
+            st.button("Boa", key="boa", on_click=b2_callback)
         with c3:
-            if st.button("Ruim", key="rum"):
-                b3_callback()
+            st.button("Ruim", key="rum", on_click=b3_callback)
         with c4:
-            if st.button("Pessima", key="pes"):
-                b4_callback()
+            st.button("Pessima", key="pes", on_click=b4_callback)
 
         st.markdown("<hr>", unsafe_allow_html=True)
 
         # botao de voltar
-        c1,c2,c3,c4=st.columns(4)
+        c1, c2, c3, c4=st.columns(4)
         with c4:
-            if st.button("Voltar", key="back"):
-                voltar_callback()
+            st.button("Voltar", key="back", on_click=voltar_callback)
         #sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
         #cur.execute(sql, (f'{prediction}', st.session_state.image_infos.iloc[st.session_state.count][0]))
         #conn.commit()
