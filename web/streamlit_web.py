@@ -349,8 +349,8 @@ wks = sh[0]
 def main():
     """Funcao responsavel por autenticacao do login"""
     senha_global = '123'
-    names = ['teste', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-    usernames = ['teste',
+    names = ['teste', 'teste2', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+    usernames = ['teste', 'teste2',
                  'marcio.mamede@complexodopecem.com.br', 'jairo.torres@complexodopecem.com.br',
                  'rodrigo.nagy@complexodopecem.com.br', 'italo.silva@complexodopecem.com.br',
                  'vladia.pontes@complexodopecem.com.br', 'rene.silva@complexodopecem.com.br',
@@ -406,6 +406,10 @@ def main():
             usernames[10]: {
                 "name": names[10],
                 "password": hashed_passwords[10]
+            },
+            usernames[11]: {
+                "name": names[11],
+                "password": hashed_passwords[11]
             }
         }
     }
