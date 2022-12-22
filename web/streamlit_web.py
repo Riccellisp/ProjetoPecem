@@ -1,21 +1,9 @@
-import os
-import glob
-import json
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import streamlit_authenticator as stauth
 #import mysql.connector
 import pygsheets
-
-try:
-    import cv2
-except ImportError:
-    import pip
-
-    pip.main(['install', '--user', 'opencv-python'])
-    import cv2
-
 from PIL import Image
 # from torchvision import models, transforms
 # import pytorch_lightning as pl
@@ -335,16 +323,6 @@ def read_html():
     with open("web/index.html") as f:
         return f.read()
 
-
-#gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
-sh = gc.open('teste_pecem')
-wks = sh[0]
-
-
-
-
-
 # ________________________________________________________________________________________________________
 def main():
     """Funcao responsavel por autenticacao do login"""
@@ -432,10 +410,11 @@ def main():
     elif authentication_status == None:
         st.warning('Please enter your username and password')
 
-
 def pagina_web():
     """Função responsável por gerar a pagina web"""
     # model, imagenet_class_index = load_model()
+    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
 
     # Variaveis de session_state
     sh = gc.open('teste_pecem')
@@ -507,14 +486,12 @@ def pagina_web():
         components.html(
             read_html(),
             height=0,
-            width=0,
-        )
+            width=0,)
 
         print("Contador no fim:",st.session_state.count)
 
     else:
         st.markdown("## A valiação foi concluida! ✅")
-
 
 if __name__ == '__main__':
     main()
