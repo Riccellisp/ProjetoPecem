@@ -213,7 +213,9 @@ def SVMClassifier():
 
 	clf = SVC(kernel='linear',class_weight='balanced')
 	clf.fit(X_train, y_train)
-
+	with open('svmClassifierModel.pkl','wb') as f:
+		pickle.dump(clf,f)
+	
 	predictions = clf.predict(X_test)
 
 	x_visual=[]
