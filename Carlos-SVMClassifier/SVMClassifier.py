@@ -74,7 +74,7 @@ def metric2(image):
 
 def SVMClassifier():
 	title='Novo dataset'
-	n_classes=3
+	n_classes=2
 	
 	pathDatabase=os.getcwd()+'\\dataset_pecem'
 
@@ -100,6 +100,10 @@ def SVMClassifier():
 	for root, dirs, files in os.walk(pathRuim):
 		for file in files:
 			list_ruim.append(os.path.join(root,file))
+
+	for root, dirs, files in os.walk(pathPessimo):
+		for file in files:
+			list_pessimo.append(os.path.join(root,file))
 
 	parameters_excelente=[]
 	parameters_bom=[]
@@ -133,33 +137,29 @@ def SVMClassifier():
 		else:
 			print(path)
 
+	for path in list_pessimo:
+		img=cv2.imread(path)
+		if img is not None:
+			parameter=[0,metric2(img)]
+			#parameter=metric1(img)
+			parameters_pessimo.append(parameter)
+		else:
+			print(path)
+
 	X_excelente = np.asarray(parameters_excelente)
 	X_bom = np.asarray(parameters_bom)
 	X_ruim = np.asarray(parameters_ruim)
+	X_pessimo = np.asarray(parameters_pessimo)
 	X = X_excelente
 	X = np.append(X,X_bom,axis=0)
 	X = np.append(X,X_ruim,axis=0)
+	X = np.append(X,X_pessimo,axis=0)
 	Y = np.ones((1,len(parameters_excelente)))*3
 	Y = np.append(Y,np.ones((1,len(parameters_bom)))*2)
 	Y = np.append(Y,np.ones((1,len(parameters_ruim)))*1)
+	Y = np.append(Y,np.ones((1,len(parameters_ruim)))*0)
 
-	if n_classes==4:
-		for root, dirs, files in os.walk(pathPessimo):
-			for file in files:
-				list_pessimo.append(os.path.join(root,file))
-		for path in list_pessimo:
-			img=cv2.imread(path)
-			if img is not None:
-				parameter=[0,metric2(img)]
-				#parameter=metric1(img)
-				parameters_pessimo.append(parameter)
-			else:
-				print(path)
-		X_pessimo = np.asarray(parameters_pessimo)
-		X = np.append(X,X_pessimo,axis=0)
-		Y = np.append(Y,np.ones((1,len(parameters_pessimo)))*0)
-
-	print(X)
+	#print(X)
 	dataset=[X,Y]
 
 	if n_classes==3:
@@ -174,8 +174,10 @@ def SVMClassifier():
 		for i in range(0,len(dataset[1])):
 			if dataset[1][i]==1:
 				dataset[1][i]=0
+			elif dataset[1][i]==2:
+				dataset[1][i]=1
 			elif dataset[1][i]==3:
-				dataset[1][i]=2
+				dataset[1][i]=1
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
 
@@ -200,9 +202,9 @@ def SVMClassifier():
 		class_legend=[["Ruim","red"],["Bom","orange"],["Excelente","green"]]
 		np.savetxt('matriz_confusao\\3 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
 	elif n_classes==2:
-		tabela=np.append([['Ruim'],['Excelente']],tabela,axis=-1)
-		tabela=np.append([['Predição\Realidade','Ruim','Excelente']],tabela,axis=0)
-		class_legend=[["Ruim","red"],["Excelente","green"]]
+		tabela=np.append([['Limpa'],['Nao Limpa']],tabela,axis=-1)
+		tabela=np.append([['Predição\Realidade','Limpa','Nao Limpa']],tabela,axis=0)
+		class_legend=[["Limpa","red"],["Nao Limpa","green"]]
 		np.savetxt('matriz_confusao\\2 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
 	avg_accuracy=sum/1000
 	print("Average accuracy=",avg_accuracy)
@@ -253,7 +255,7 @@ def SVMClassifier():
 	elif(n_classes==3):
 		plt.savefig('Gráfico dispersão\\3 Classes\\'+title+'.png')
 	elif(n_classes==2):
-		plt.savefig('Gráfico dispersão\\3 Classes\\'+title+'.png')
+		plt.savefig('Gráfico dispersão\\2 Classes\\'+title+'.png')
 	plt.show()
 
 def NCCClassifier():
@@ -423,5 +425,5 @@ def NCCClassifier():
 	plt.show()
 	
 
-NCCClassifier()
+SVMClassifier()
 
