@@ -1,0 +1,56 @@
+cookie:
+  expiry_days: 1
+  key: some_signature_key
+  name: some_cookie_name
+credentials:
+  usernames:
+    david@dtrtecnologia.com.br:
+      email: null
+      name: 9
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    ismaelcavalcante@dtrtecnologia.com.br:
+      email: null
+      name: 10
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    italo.silva@complexodopecem.com.br:
+      email: null
+      name: 4
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    jairo.torres@complexodopecem.com.br:
+      email: null
+      name: 2
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    lucas.moura@compexodopecem.com.br:
+      email: null
+      name: 7
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    marcio.mamede@complexodopecem.com.br:
+      email: null
+      name: 1
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    pedro.castro@complexodopecem.com.br:
+      email: null
+      name: 8
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    rene.silva@complexodopecem.com.br:
+      email: null
+      name: 6
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    rodrigo.nagy@complexodopecem.com.br:
+      email: null
+      name: 3
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    teste:
+      email: null
+      name: teste
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    teste2:
+      email: null
+      name: teste2
+      password: $2b$12$Erpqcu6RbpkuD0YxWD9eberu6dZtm3vQ32Ubb1inTj0rlqc9u3ryO
+    vladia.pontes@complexodopecem.com.br:
+      email: null
+      name: 5
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+preauthorized:
+  emails: null

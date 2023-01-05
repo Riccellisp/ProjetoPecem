@@ -7,6 +7,8 @@ import pandas as pd
 import streamlit_authenticator as stauth
 #import mysql.connector
 import pygsheets
+import yaml
+from yaml import SafeLoader
 
 try:
     import cv2
@@ -329,6 +331,23 @@ def b4_callback():
 
     st.session_state.count += 1
 
+reset_password_flag = True
+
+def reset_password_callback():
+    with open('C:/Users/carlo/Desktop/ProjetoPecem/web/config.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
+
+    if st.session_state['authentication_status']:
+        try:
+            if st.session_state.authentication.reset_password(st.session_state['username'], 'Reset password'):
+                with open('C:/Users/carlo/Desktop/ProjetoPecem/web/config.yaml', 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
+                st.success('Password modified successfully')
+        except Exception as e:
+            st.error(e)
+    global reset_password_flag
+    reset_password_flag = False
+
 
 def read_html():
     #with open("web/index.html") as f:
@@ -348,74 +367,19 @@ wks = sh[0]
 # ________________________________________________________________________________________________________
 def main():
     """Funcao responsavel por autenticacao do login"""
-    senha_global = '123'
-    names = ['teste', 'teste2', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-    usernames = ['teste', 'teste2',
-                 'marcio.mamede@complexodopecem.com.br', 'jairo.torres@complexodopecem.com.br',
-                 'rodrigo.nagy@complexodopecem.com.br', 'italo.silva@complexodopecem.com.br',
-                 'vladia.pontes@complexodopecem.com.br', 'rene.silva@complexodopecem.com.br',
-                 'lucas.moura@compexodopecem.com.br', 'pedro.castro@complexodopecem.com.br',
-                 'david@dtrtecnologia.com.br', 'ismaelcavalcante@dtrtecnologia.com.br']
-    passwords = [senha_global, senha_global, senha_global, senha_global, senha_global,
-                 senha_global, senha_global, senha_global, senha_global, senha_global,
-                 senha_global, senha_global]
 
-    hashed_passwords = stauth.Hasher(passwords).generate()
-    credentials = {
-        "usernames": {
-            usernames[0]: {
-                "name": names[0],
-                "password": hashed_passwords[0]
-            },
-            usernames[1]: {
-                "name": names[1],
-                "password": hashed_passwords[1]
-            },
-            usernames[2]: {
-                "name": names[2],
-                "password": hashed_passwords[2]
-            },
-            usernames[3]: {
-                "name": names[3],
-                "password": hashed_passwords[3]
-            },
-            usernames[4]: {
-                "name": names[4],
-                "password": hashed_passwords[4]
-            },
-            usernames[5]: {
-                "name": names[5],
-                "password": hashed_passwords[5]
-            },
-            usernames[6]: {
-                "name": names[6],
-                "password": hashed_passwords[6]
-            },
-            usernames[7]: {
-                "name": names[7],
-                "password": hashed_passwords[7]
-            },
-            usernames[8]: {
-                "name": names[8],
-                "password": hashed_passwords[8]
-            },
-            usernames[9]: {
-                "name": names[9],
-                "password": hashed_passwords[9]
-            },
-            usernames[10]: {
-                "name": names[10],
-                "password": hashed_passwords[10]
-            },
-            usernames[11]: {
-                "name": names[11],
-                "password": hashed_passwords[11]
-            }
-        }
-    }
+    with open('C:/Users/carlo/Desktop/ProjetoPecem/web/config.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
 
-    authenticator = stauth.Authenticate(credentials, 'some_cookie_name', 'some_signature_key',
-                                        cookie_expiry_days=1)
+    # A senha padrao e '123'
+
+    authenticator = stauth.Authenticate(
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days'],
+        config['preauthorized']
+        )
 
     name, authentication_status, username = authenticator.login('Login', 'main')
     # Verificar se a avaliação foi completa:
@@ -425,7 +389,11 @@ def main():
     if name == None:
         st.session_state.count = 0
 
-    if authentication_status:
+    if authentication_status and reset_password_flag:
+        if st.button('Resetar Senha'):
+            reset_password_callback()
+
+    if authentication_status and reset_password_flag:
         pagina_web()
     elif authentication_status == False:
         st.error('Username/password is incorrect')

@@ -8,3 +8,4 @@ opencv-python-headless
 protobuf==3.19.6
 streamlit_authenticator
 pygsheets
+PyYAML
