@@ -5,6 +5,12 @@ import streamlit_authenticator as stauth
 #import mysql.connector
 import pygsheets
 from PIL import Image
+
+st.set_page_config(
+    page_title="Sistema de Avaliação"
+)
+
+
 # from torchvision import models, transforms
 # import pytorch_lightning as pl
 # import torch.optim as optim
@@ -337,8 +343,10 @@ def main():
     passwords = [senha_global, senha_global, senha_global, senha_global, senha_global,
                  senha_global, senha_global, senha_global, senha_global, senha_global,
                  senha_global, senha_global]
-
+    
     hashed_passwords = stauth.Hasher(passwords).generate()
+
+
     credentials = {
         "usernames": {
             usernames[0]: {
@@ -395,8 +403,11 @@ def main():
     authenticator = stauth.Authenticate(credentials, 'some_cookie_name', 'some_signature_key',
                                         cookie_expiry_days=1)
 
+
     name, authentication_status, username = authenticator.login('Login', 'main')
-    # Verificar se a avaliação foi completa:
+    c1,c2,c3 = st.columns([1.2,1,1])
+    with c2: st.markdown("[Esqueceu a senha](https://streamlit.io)")
+
 
     st.session_state.authentication = authenticator
 
