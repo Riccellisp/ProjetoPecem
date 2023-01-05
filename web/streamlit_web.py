@@ -331,13 +331,13 @@ def b4_callback():
 reset_password_flag = True
 
 def reset_password_callback():
-    with open('C:/Users/carlo/Desktop/ProjetoPecem/web/config.yaml') as file:
+    with open('web/config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
     if st.session_state['authentication_status']:
         try:
             if st.session_state.authentication.reset_password(st.session_state['username'], 'Reset password'):
-                with open('C:/Users/carlo/Desktop/ProjetoPecem/web/config.yaml', 'w') as file:
+                with open('web/config.yaml', 'w') as file:
                     yaml.dump(config, file, default_flow_style=False)
                 st.success('Password modified successfully')
         except Exception as e:
@@ -365,7 +365,7 @@ wks = sh[0]
 def main():
     """Funcao responsavel por autenticacao do login"""
 
-    with open('C:/Users/carlo/Desktop/ProjetoPecem/web/config.yaml') as file:
+    with open('web/config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
     # A senha padrao e '123'
