@@ -9,16 +9,13 @@ import streamlit_authenticator as stauth
 import pygsheets
 import yaml
 from yaml import SafeLoader
-
-try:
-    import cv2
-except ImportError:
-    import pip
-
-    pip.main(['install', '--user', 'opencv-python'])
-    import cv2
-
 from PIL import Image
+
+st.set_page_config(
+    page_title="Avaliação"
+)
+
+
 # from torchvision import models, transforms
 # import pytorch_lightning as pl
 # import torch.optim as optim
@@ -404,6 +401,8 @@ def main():
 def pagina_web():
     """Função responsável por gerar a pagina web"""
     # model, imagenet_class_index = load_model()
+    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
 
     # Variaveis de session_state
     sh = gc.open('teste_pecem')
@@ -414,13 +413,14 @@ def pagina_web():
         st.session_state.count = 0
 
     # pagina web
-    if st.session_state.count < len(st.session_state.image_infos) - 1:  # Verificar se a avaliação foi completa
+    if st.session_state.count < len(st.session_state.image_infos):  # Verificar se a avaliação foi completa
         while not (st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name}"]) == "":
             st.session_state.count += 1
         # header acima da imagem principal
         col1, col2, col3,col4=st.columns([3,4,1,1])
         with col1:
             st.session_state.authentication.logout('Logout', 'main')
+        print("Contator no inicio: ",st.session_state.count)
         with col2:
             total=len(st.session_state.image_infos.loc[st.session_state.image_infos['cam_num']==st.session_state.image_infos.iloc[st.session_state.count][2]])-1
             # concluido=st.session_state.count 
@@ -477,7 +477,7 @@ def pagina_web():
             width=0,
         )
 
-        print("Contador:",st.session_state.count)
+        print("Contador no fim:",st.session_state.count)
 
     else:
         st.markdown("## A valiação foi concluida! ✅")
