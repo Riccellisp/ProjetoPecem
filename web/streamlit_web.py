@@ -245,25 +245,6 @@ def voltar_callback():
         wks.set_dataframe(csv_infos, (0, 0))
 
 
-
-# def confirma_callback():
-#     ev_string = f"ev_label_{st.session_state['name'][3]}"
-#     #sql = f'UPDATE db_pecem SET {ev_string}=%s WHERE image_name=%s;'
-#     #cur.execute(sql, (st.session_state.prediction, st.session_state.image_infos.iloc[st.session_state.count][0]))
-#     #conn.commit()
-#
-#     #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-#     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
-#     sh = gc.open('teste_pecem')
-#     wks = sh[0]
-#     csv_infos = wks.get_as_df()
-#     #csv_infos = st.session_state.image_infos
-#     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
-#     csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = st.session_state.prediction
-#     wks.set_dataframe(csv_infos,(0,0))
-#
-#     st.session_state.count += 1
-
 def b1_callback():
     ev_label = 'Excelente'
     ev_string = f"ev_label_{st.session_state['name']}"
@@ -345,23 +326,25 @@ def reset_password_callback():
     global reset_password_flag
     reset_password_flag = False
 
+def reset_password_sheets(nova_senha):
+    ev_string = f"ev_label_{st.session_state['name']}"
+
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')  # se conecta com a planilha
+    sh = gc.open('teste_pecem')                                             # 
+    # wks = sh[0]                                                           # worksheet 1
+    logins = sh[1]
+    pw_df = logins.get_as_df()
+    pw_df[ev_string] = nova_senha
+    logins.set_dataframe(pw_df,(0,0))                                       # atualiza a planilha
+
 
 def read_html():
     #with open("web/index.html") as f:
     with open("web/index.html") as f:
         return f.read()
-
-
-#gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
-sh = gc.open('teste_pecem')
-wks = sh[0]
-
-
-
-
-
 # ________________________________________________________________________________________________________
+
+
 def main():
     """Funcao responsavel por autenticacao do login"""
 
@@ -389,6 +372,7 @@ def main():
     if authentication_status and reset_password_flag:
         if st.button('Resetar Senha'):
             reset_password_callback()
+            reset_password_sheets("Teste")
 
     if authentication_status and reset_password_flag:
         pagina_web()
@@ -401,12 +385,12 @@ def main():
 def pagina_web():
     """Função responsável por gerar a pagina web"""
     # model, imagenet_class_index = load_model()
-    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+
     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
 
     # Variaveis de session_state
     sh = gc.open('teste_pecem')
-    wks = sh[0]
+    wks, passwords= sh[0], sh[1]
     infos = wks.get_as_df()  # create the dataframe
     st.session_state.image_infos = infos
     if 'count' not in st.session_state:
