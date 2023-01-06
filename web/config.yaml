@@ -47,10 +47,18 @@ credentials:
     teste2:
       email: null
       name: teste2
-      password: $2b$12$Erpqcu6RbpkuD0YxWD9eberu6dZtm3vQ32Ubb1inTj0rlqc9u3ryO
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
     vladia.pontes@complexodopecem.com.br:
       email: null
       name: 5
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    rafael.nogueira@rfb.gov.br:
+      email: null
+      name: 11
+      password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
+    marcelo.vidal@rfb.gov.br:
+      email: null
+      name: 12
       password: $2b$12$NXqCPAl/YBJF3.CedAZ99Ont.SsUBx9gQd/c7rqtjyhwzhESOsD9e
 preauthorized:
   emails: null
