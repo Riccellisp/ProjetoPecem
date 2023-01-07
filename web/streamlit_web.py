@@ -227,16 +227,16 @@ st.set_page_config(
 
 # ________________________________________________________________________________________________________
 # Create a connection object.
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=[
-        "https://www.googleapis.com/auth/spreadsheets",
-    ],
-)
-logins_obj = pygsheets.authorize(custom_credentials=credentials)   # Objeto de conexão com as credenciais em segredo
-sheet = logins_obj.open("Logins | Site de Avaliação manual das Imagens") # A planilha
-logins = sheet[0]  # Primeira pagina da Planilha
-ws0_df = logins.get_as_df() # Obtem um dataframe a partir da planilha
+# credentials = service_account.Credentials.from_service_account_info(
+#     st.secrets["gcp_service_account"],
+#     scopes=[
+#         "https://www.googleapis.com/auth/spreadsheets",
+#     ],
+# )
+# logins_obj = pygsheets.authorize(service_file='web/data/sheets-lesc-283e0473d600.json')   # Objeto de conexão com as credenciais em segredo
+# sheet = logins_obj.open("Logins | Site de Avaliação manual das Imagens") # A planilha
+# logins = sheet[0]  # Primeira pagina da Planilha
+# ws0_df = logins.get_as_df() # Obtem um dataframe a partir da planilha
 
 
 
@@ -393,7 +393,7 @@ def pagina_web():
         )
 
         print("Contador no fim:",st.session_state.count)
-        st.dataframe(ws0_df)
+        # st.dataframe(ws0_df)
     else:
         st.markdown("## A valiação foi concluida! ✅")
     
