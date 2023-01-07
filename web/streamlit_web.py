@@ -437,9 +437,9 @@ def main():
     if authentication_status:
         pagina_web()
     elif authentication_status == False:
-        st.error('Username/password is incorrect')
+        st.error('Email/senha está incorreto')
     elif authentication_status == None:
-        st.warning('Please enter your username and password')
+        st.warning('Favor inserir seu email e senha')
 
 
 def pagina_web():
