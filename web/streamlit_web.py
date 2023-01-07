@@ -3,10 +3,8 @@ import glob
 import json
 import streamlit as st
 import streamlit.components.v1 as components
+import pandas as pd
 import streamlit_authenticator as stauth
-from google.oauth2 import service_account
-from callbacks import *
-
 #import mysql.connector
 import pygsheets
 import yaml
@@ -226,46 +224,90 @@ st.set_page_config(
 
 
 # ________________________________________________________________________________________________________
-# Create a connection object.
-# credentials = service_account.Credentials.from_service_account_info(
-#     st.secrets["gcp_service_account"],
-#     scopes=[
-#         "https://www.googleapis.com/auth/spreadsheets",
-#     ],
-# )
-# logins_obj = pygsheets.authorize(service_file='web/data/sheets-lesc-283e0473d600.json')   # Objeto de conexão com as credenciais em segredo
-# sheet = logins_obj.open("Logins | Site de Avaliação manual das Imagens") # A planilha
-# logins = sheet[0]  # Primeira pagina da Planilha
-# ws0_df = logins.get_as_df() # Obtem um dataframe a partir da planilha
+# callbacks para botões:
+def voltar_callback():
+    if st.session_state.count == 0:
+        st.write("Realize ao menos uma avaliação!")
+    else:
+        st.session_state.count -= 1
+
+        ev_label = ''
+        ev_string = f"ev_label_{st.session_state['name']}"
+
+        # gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+        gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+        sh = gc.open('teste_pecem')
+        wks = sh[0]
+        csv_infos = wks.get_as_df()
+        # csv_infos = st.session_state.image_infos
+        # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
+        csv_infos.loc[csv_infos['image_path'] == csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
+        wks.set_dataframe(csv_infos, (0, 0))
 
 
+def b1_callback():
+    ev_label = 'Excelente'
+    ev_string = f"ev_label_{st.session_state['name']}"
+    
+    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    sh = gc.open('teste_pecem')
+    wks = sh[0]
+    csv_infos = wks.get_as_df()
+    #csv_infos = st.session_state.image_infos
+    # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
+    csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
+    wks.set_dataframe(csv_infos,(0,0))
 
-def reset_password_callback():
-    with open('web/config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
+    st.session_state.count += 1
 
-    if st.session_state['authentication_status']:
-        try:
-            if st.session_state.authentication.reset_password(st.session_state['username'], 'Reset password'):
-                with open('web/config.yaml', 'w') as file:
-                    yaml.dump(config, file, default_flow_style=False)
-                st.success('Password modified successfully')
-        except Exception as e:
-            st.error(e)
-    global reset_password_flag
-    reset_password_flag = False
+def b2_callback():
+    ev_label = 'Bom'
+    ev_string = f"ev_label_{st.session_state['name']}"
+    
+    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    sh = gc.open('teste_pecem')
+    wks = sh[0]
+    csv_infos = wks.get_as_df()
+    #csv_infos = st.session_state.image_infos
+    # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
+    csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
+    wks.set_dataframe(csv_infos,(0,0))
 
-# def reset_password_sheets(nova_senha):
-#     ev_string = f"ev_label_{st.session_state['name']}"
+    st.session_state.count += 1
 
-#     gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')  # se conecta com a planilha
-#     sh = gc.open('teste_pecem')                                             # 
-#     # wks = sh[0]                                                           # worksheet 1
-#     logins = sh[1]
-#     pw_df = logins.get_as_df()
-#     pw_df[ev_string] = nova_senha
-#     logins.set_dataframe(pw_df,(0,0))                                       # atualiza a planilha
+def b3_callback():
+    ev_label = 'Ruim'
+    ev_string = f"ev_label_{st.session_state['name']}"
+    
+    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    sh = gc.open('teste_pecem')
+    wks = sh[0]
+    csv_infos = wks.get_as_df()
+    #csv_infos = st.session_state.image_infos
+    # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
+    csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
+    wks.set_dataframe(csv_infos,(0,0))
 
+    st.session_state.count += 1
+
+def b4_callback():
+    ev_label = 'Pessimo'
+    ev_string = f"ev_label_{st.session_state['name']}"
+    
+    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    sh = gc.open('teste_pecem')
+    wks = sh[0]
+    csv_infos = wks.get_as_df()
+    #csv_infos = st.session_state.image_infos
+    # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
+    csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], ev_string] = ev_label
+    wks.set_dataframe(csv_infos,(0,0))
+
+    st.session_state.count += 1
 
 def read_html():
     #with open("web/index.html") as f:
@@ -283,29 +325,116 @@ def main():
     with open('web/config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
+    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')  # se conecta com a planilha
+    sh = gc.open('pecem_credenciais')  #
+    # wks = sh[0]                                                           # worksheet 1
+    logins = sh[1]
+    pw_df = logins.get_as_df()
+
+    names = pw_df.loc[0:13, 'name'].values
+    usernames = pw_df.loc[0:13, 'username'].values
+    hashed_passwords = pw_df.loc[0:13, 'password'].values
+
     # A senha padrao e '123'
 
+    credentials = {
+        "usernames": {
+            usernames[0]: {
+                "name": names[0],
+                "password": hashed_passwords[0]
+            },
+            usernames[1]: {
+                "name": names[1],
+                "password": hashed_passwords[1]
+            },
+            usernames[2]: {
+                "name": names[2],
+                "password": hashed_passwords[2]
+            },
+            usernames[3]: {
+                "name": names[3],
+                "password": hashed_passwords[3]
+            },
+            usernames[4]: {
+                "name": names[4],
+                "password": hashed_passwords[4]
+            },
+            usernames[5]: {
+                "name": names[5],
+                "password": hashed_passwords[5]
+            },
+            usernames[6]: {
+                "name": names[6],
+                "password": hashed_passwords[6]
+            },
+            usernames[7]: {
+                "name": names[7],
+                "password": hashed_passwords[7]
+            },
+            usernames[8]: {
+                "name": names[8],
+                "password": hashed_passwords[8]
+            },
+            usernames[9]: {
+                "name": names[9],
+                "password": hashed_passwords[9]
+            },
+            usernames[10]: {
+                "name": names[10],
+                "password": hashed_passwords[10]
+            },
+            usernames[11]: {
+                "name": names[11],
+                "password": hashed_passwords[11]
+            },
+            usernames[12]: {
+                "name": names[12],
+                "password": hashed_passwords[12]
+            },
+            usernames[13]: {
+                "name": names[13],
+                "password": hashed_passwords[13]
+            }
+        }
+    }
+
     authenticator = stauth.Authenticate(
-        config['credentials'],
-        config['cookie']['name'],
-        config['cookie']['key'],
-        config['cookie']['expiry_days'],
-        config['preauthorized']
+        credentials,
+        'cookie_name', 'signature_key',
+        cookie_expiry_days=1
         )
 
     name, authentication_status, username = authenticator.login('Login', 'main')
+    # Verificar se a avaliação foi completa:
 
     st.session_state.authentication = authenticator
 
     if name == None:
         st.session_state.count = 0
 
-    if authentication_status and reset_password_flag:
-        if st.button('Resetar Senha'):
-            reset_password_callback()
-            # reset_password_sheets("Teste")
+    if 'reset_flag' not in st.session_state:
+        st.session_state.reset_flag = False
 
-    if authentication_status and reset_password_flag:
+    if authentication_status:
+        if st.button('Trocar Senha') or st.session_state.reset_flag:
+            st.session_state.new_password = st.text_input("Escreva a nova senha e aperte Enter")
+            if st.session_state.reset_flag and not st.session_state.new_password == '':
+                gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')  # se conecta com a planilha
+                sh = gc.open('pecem_credenciais')  #
+                # wks = sh[0]                                                           # worksheet 1
+                logins = sh[1]
+                pw_df = logins.get_as_df()
+                hashed_new_password = stauth.Hasher([st.session_state.new_password]).generate()
+                pw_df.loc[pw_df['name'] == st.session_state['name'], 'password'] = hashed_new_password
+                logins.set_dataframe(pw_df, (0, 0))  # atualiza a planilha
+
+                st.write('Senha alterada!')
+
+                st.session_state.reset_flag = False
+            else:
+                st.session_state.reset_flag = True
+
+    if authentication_status:
         pagina_web()
     elif authentication_status == False:
         st.error('Username/password is incorrect')
@@ -393,10 +522,10 @@ def pagina_web():
         )
 
         print("Contador no fim:",st.session_state.count)
-        # st.dataframe(ws0_df)
+
     else:
         st.markdown("## A valiação foi concluida! ✅")
-    
+
 
 if __name__ == '__main__':
     main()
