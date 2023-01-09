@@ -74,9 +74,9 @@ def metric2(image):
 
 def SVMClassifier():
 	title='Novo dataset'
-	n_classes=2
+	n_classes=4
 	
-	pathDatabase=os.getcwd()+'\\dataset_pecem'
+	pathDatabase=os.getcwd()+'\\dataset_pecem_augmented'
 
 	pathExcelente=pathDatabase+'\\Excelente'
 	pathBom=pathDatabase+'\\Bom'
@@ -181,16 +181,15 @@ def SVMClassifier():
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
 
-	for i in range(0,1000):
-		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
-		clf = SVC(kernel='linear',class_weight='balanced')
-		clf.fit(X_train, y_train)
-		predictions = clf.predict(X_test)
-		sum=sum+accuracy_score(y_test, predictions)
-		for i in range(0,len(predictions)):
-			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
+	
+	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
+	clf = SVC(kernel='linear',class_weight='balanced')
+	clf.fit(X_train, y_train)
+	predictions = clf.predict(X_test)
+	sum=sum+accuracy_score(y_test, predictions)
+	for i in range(0,len(predictions)):
+		tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
 
-	tabela=tabela/1000
 	if n_classes==4:
 		tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
 		tabela=np.append([['Predição\Realidade','Péssimo','Ruim','Bom','Excelente']],tabela,axis=0)
@@ -206,7 +205,7 @@ def SVMClassifier():
 		tabela=np.append([['Predição\Realidade','Limpa','Nao Limpa']],tabela,axis=0)
 		class_legend=[["Limpa","red"],["Nao Limpa","green"]]
 		np.savetxt('matriz_confusao\\2 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
-	avg_accuracy=sum/1000
+	avg_accuracy=sum
 	print("Average accuracy=",avg_accuracy)
 	print(tabulate(tabela))
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
