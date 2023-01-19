@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import random
 import os
+import math
 from eme import eme
 from emee import emee
 import matplotlib.pyplot as plt
@@ -57,20 +58,70 @@ def variance_of_laplacian(image):
 	return cv2.Laplacian(image, cv2.CV_64F).var()
 
 def ANC(image,L1,L2):#Artificial Noise Comparison
-	return rmse(image,cv2.GaussianBlur(image,(L1*2+1,L1*2+1),0))
+	return [0,rmse(image,cv2.GaussianBlur(image,(L1*2+1,L1*2+1),0))]
+
+def modifiedVariance_of_laplacian(image,L1,L2):
+	resized = cv2.resize(image,(1680,860),interpolation = cv2.INTER_AREA)
+	grayImg = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+	blurImg = cv2.GaussianBlur(grayImg,(L1-L1%2+1,L2-L2%2+1),0)
+	rowSize, columnSize = grayImg.shape
+	nRows = int(rowSize/L1)
+	nColumns = int(columnSize/L2)
+	responseVector=[]
+
+	for i in range(0,nRows):
+		for j in range(0,nColumns):
+			responseVector.append(cv2.Laplacian(grayImg[i*L1:(i+1)*L1,j*L2:(j+1)*L1], cv2.CV_64F).var())
+	return responseVector
+
+def modifiedStd(image,L1,L2):
+	resized = cv2.resize(image,(1680,860),interpolation = cv2.INTER_AREA)
+	grayImg = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+	blurImg = cv2.GaussianBlur(grayImg,(L1-L1%2+1,L2-L2%2+1),0)
+	rowSize, columnSize = grayImg.shape
+	nRows = int(rowSize/L1)
+	nColumns = int(columnSize/L2)
+	responseVector=[]
+
+	for i in range(0,nRows):
+		for j in range(0,nColumns):
+			responseVector.append(np.std(grayImg[i*L1:(i+1)*L1,j*L2:(j+1)*L1]))
+	return responseVector
+
+def modifiedANC(image,L1,L2):
+	resized = cv2.resize(image,(1680,860),interpolation = cv2.INTER_AREA)
+	grayImg = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+	blurImg = cv2.GaussianBlur(grayImg,(L1-L1%2+1,L2-L2%2+1),0)
+	rowSize, columnSize = grayImg.shape
+	nRows = int(rowSize/L1)
+	nColumns = int(columnSize/L2)
+	responseVector=[]
+
+	for i in range(0,nRows):
+		for j in range(0,nColumns):
+			error = np.subtract(grayImg[i*L1:(i+1)*L1,j*L2:(j+1)*L1],
+				blurImg[i*L1:(i+1)*L1,j*L2:(j+1)*L1])
+			sqrtError = np.square(error)
+			meanSqrtError = np.mean(sqrtError)
+			responseVector.append(math.sqrt(meanSqrtError))
+	return responseVector
 
 def metric1(image):
 	#return variance_of_laplacian(image)
 	#return eme(image,20,20)
 	#return emee(image,50,50)
 	#return standardDesv(image,10,10)
-	return ANC(image,20,20)
+	#return ANC(image,20,20)
+	return modifiedANC(image,20,20)
+	#return modifiedVariance_of_laplacian(image,20,20)
+	#return modifiedStd(image,20,20)
 def metric2(image):
 	#return variance_of_laplacian(image)
 	#return eme(image,20,20)
 	#return emee(image,50,50)
 	#return standardDesv(image,10,10)
 	return ANC(image,20,20)
+
 
 def SVMClassifier():
 	title='Novo dataset'
@@ -113,8 +164,8 @@ def SVMClassifier():
 	for path in list_excelente:
 		img=cv2.imread(path)
 		if img is not None:
-			parameter=[0,metric2(img)]
-			#parameter=metric1(img)
+			#parameter=[0,metric2(img)]
+			parameter=metric1(img)
 			parameters_excelente.append(parameter)
 		else:
 			print(path)
@@ -122,8 +173,8 @@ def SVMClassifier():
 	for path in list_bom:
 		img=cv2.imread(path)
 		if img is not None:
-			parameter=[0,metric2(img)]
-			#parameter=metric1(img)
+			#parameter=[0,metric2(img)]
+			parameter=metric1(img)
 			parameters_bom.append(parameter)
 		else:
 			print(path)
@@ -131,8 +182,8 @@ def SVMClassifier():
 	for path in list_ruim:
 		img=cv2.imread(path)
 		if img is not None:
-			parameter=[0,metric2(img)]
-			#parameter=metric1(img)
+			#parameter=[0,metric2(img)]
+			parameter=metric1(img)
 			parameters_ruim.append(parameter)
 		else:
 			print(path)
@@ -140,8 +191,8 @@ def SVMClassifier():
 	for path in list_pessimo:
 		img=cv2.imread(path)
 		if img is not None:
-			parameter=[0,metric2(img)]
-			#parameter=metric1(img)
+			#parameter=[0,metric2(img)]
+			parameter=metric1(img)
 			parameters_pessimo.append(parameter)
 		else:
 			print(path)
@@ -181,14 +232,14 @@ def SVMClassifier():
 	sum=0
 	tabela=np.zeros((n_classes,n_classes))
 
-	
-	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
-	clf = SVC(kernel='linear',class_weight='balanced')
-	clf.fit(X_train, y_train)
-	predictions = clf.predict(X_test)
-	sum=sum+accuracy_score(y_test, predictions)
-	for i in range(0,len(predictions)):
-		tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
+	for i in range(0,1000):
+		X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])
+		clf = SVC(kernel='linear',class_weight='balanced')
+		clf.fit(X_train, y_train)
+		predictions = clf.predict(X_test)
+		sum=sum+accuracy_score(y_test, predictions)
+		for i in range(0,len(predictions)):
+			tabela[int(predictions[i])][int(y_test[i])]=tabela[int(predictions[i])][int(y_test[i])]+1
 
 	if n_classes==4:
 		tabela=np.append([['Péssimo'],['Ruim'],['Bom'],['Excelente']],tabela,axis=-1)
@@ -205,7 +256,7 @@ def SVMClassifier():
 		tabela=np.append([['Predição\Realidade','Limpa','Nao Limpa']],tabela,axis=0)
 		class_legend=[["Limpa","red"],["Nao Limpa","green"]]
 		np.savetxt('matriz_confusao\\2 Classes\\'+title+'.csv', tabela, delimiter =", ",fmt="%s")
-	avg_accuracy=sum
+	avg_accuracy=sum/1000
 	print("Average accuracy=",avg_accuracy)
 	print(tabulate(tabela))
 	X_train, X_test, y_train, y_test = train_test_split(dataset[0], dataset[1])

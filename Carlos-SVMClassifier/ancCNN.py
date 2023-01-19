@@ -12,6 +12,8 @@ class ancCNN:
 		self.model=None
 		self.rowSample=40
 		self.columnSample=40
+		self.y_train=[]
+		self.y_test=[]
 
 	def ANC(self,img):
 		resized = cv2.resize(img,(1680,860),interpolation = cv2.INTER_AREA)
@@ -126,11 +128,11 @@ class ancCNN:
 		self.model.compile(optimizer='adam',
 		              loss='categorical_crossentropy',
 		              metrics=[tf.keras.metrics.CategoricalAccuracy()])
-		es_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=3)
+		es_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=5)
 		losses = self.model.fit(X_train,y_train,
 				validation_data=(X_test,y_test),
 				callbacks=[es_callback],
-				epochs=200
+				epochs=1000
 				)
 		return losses
 
@@ -212,9 +214,10 @@ def validation():
 
 
 # ------Training routine------
-#model=ancCNN() #Instanciate the model
-#model.train_model(os.getcwd()+'\\dataset_pecem_augmented') #Train the model
-#model.save_model(os.getcwd()+'\\ancCnn') #Save the model to file
+model=ancCNN() #Instanciate the model
+model.train_model(os.getcwd()+'\\dataset_pecem_augmented') #Train the model
+model.save_model(os.getcwd()+'\\ancCnn') #Save the model to file
+
 
 
 # ------Loading routine-------
