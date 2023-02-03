@@ -405,7 +405,6 @@ def main():
         )
 
     name, authentication_status, username = authenticator.login('Login', 'main')
-    # Verificar se a avaliação foi completa:
 
     st.session_state.authentication = authenticator
 
@@ -458,20 +457,21 @@ def pagina_web():
 
     # pagina web
     if st.session_state.count < len(st.session_state.image_infos):  # Verificar se a avaliação foi completa
+
         while not (st.session_state.image_infos.loc[st.session_state.count, f"ev_label_{st.session_state.name}"]) == "":
             st.session_state.count += 1
+        avaliadas = len(infos.loc[(infos[f"ev_label_{st.session_state['name']}"]!="")])
+ 
+        my_bar = st.progress(avaliadas/(len(st.session_state.image_infos)-1))
+
         # header acima da imagem principal
-        col1, col2, col3,col4=st.columns([3,4,1,1])
+        col1, col2, col3,col4=st.columns([3,7.2,1,1])
         with col1:
             st.session_state.authentication.logout('Logout', 'main')
         print("Contator no inicio: ",st.session_state.count)
         with col2:
-            total=len(st.session_state.image_infos.loc[st.session_state.image_infos['cam_num']==st.session_state.image_infos.iloc[st.session_state.count][2]])-1
-            # concluido=st.session_state.count 
-            # if st.session_state.image_infos.iloc[0][2].split('_')[0]=='cam' and st.session_state.image_infos.iloc[st.session_state.count][2]!=st.session_state.image_infos.iloc[st.session_state.count-1][2]:
-            #     concluido=0
-            # st.button(f"{st.session_state.image_infos.iloc[st.session_state.count][2]} | Concluídas: {concluido}/{total}")  
-            st.button(f"{st.session_state.image_infos.iloc[st.session_state.count][2]} | Total de Imagens: {total}")  
+            # total=len(st.session_state.image_infos.loc[st.session_state.image_infos['cam_num']==st.session_state.image_infos.iloc[st.session_state.count][2]])-1
+            st.button(f"{st.session_state.image_infos.iloc[st.session_state.count][2]} | Total de imagens avaliadas: {avaliadas}/{(len(st.session_state.image_infos))}")  
         with col3:
             logoPecem=Image.open("web/logos/logoPecem.jpg")
             st.image(logoPecem,width=60)
@@ -504,7 +504,7 @@ def pagina_web():
         st.markdown("<hr>", unsafe_allow_html=True)
 
         # botao de voltar
-        c1, c2, c3, c4=st.columns(4)
+        c1, c2, c3, c4=st.columns([1,1,3.5,1])
         with c4:
             st.button("Voltar", key="back", on_click=voltar_callback)
         #sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
