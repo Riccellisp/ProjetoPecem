@@ -198,17 +198,19 @@ def sobel(image,L1,L2):
 	sobel_y = cv2.Sobel(grayImg, cv2.CV_16S, 0, 1, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
 	sobel_abs = cv2.addWeighted(cv2.convertScaleAbs(sobel_x), 0.5, cv2.convertScaleAbs(sobel_y), 0.5, 0)
 
-	sobel_x = cv2.Sobel(blurImg, cv2.CV_16S, 1, 0, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-	sobel_y = cv2.Sobel(blurImg, cv2.CV_16S, 0, 1, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-	sobel_abs_blur = cv2.addWeighted(cv2.convertScaleAbs(sobel_x), 0.5, cv2.convertScaleAbs(sobel_y), 0.5, 0)
+	# sobel_x = cv2.Sobel(blurImg, cv2.CV_16S, 1, 0, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
+	# sobel_y = cv2.Sobel(blurImg, cv2.CV_16S, 0, 1, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
+	# sobel_abs_blur = cv2.addWeighted(cv2.convertScaleAbs(sobel_x), 0.5, cv2.convertScaleAbs(sobel_y), 0.5, 0)
 
 	for i in range(0,nRows):
 		for j in range(0,nColumns):
-			error = np.subtract(sobel_abs[i*L1:(i+1)*L1,j*L2:(j+1)*L1],
-				sobel_abs_blur[i*L1:(i+1)*L1,j*L2:(j+1)*L1])
-			sqrtError = np.square(error)
-			meanSqrtError = np.mean(sqrtError)
-			responseVector.append(math.sqrt(meanSqrtError)/255)
+			# error = np.subtract(sobel_abs[i*L1:(i+1)*L1,j*L2:(j+1)*L1],
+			# 	sobel_abs_blur[i*L1:(i+1)*L1,j*L2:(j+1)*L1])
+			# sqrtError = np.square(error)
+			# meanSqrtError = np.mean(sqrtError)
+			# responseVector.append(math.sqrt(meanSqrtError)/255)
+			responseVector.append(np.mean(sobel_abs[i*L1:(i+1)*L1,j*L2:(j+1)*L1]))
+
 	return responseVector
 
 def metric(image):
@@ -218,7 +220,7 @@ def metric(image):
 	#return modifiedVariance_of_laplacian(image,40,40)
 	#return modifiedStd(image,40,40)
 	#return PSNR(image,40,40)
-	return sobel(image,40,40)
+	return sobel(image,20,20)
 
 def SVMClassifier():
 	title='Novo dataset'
