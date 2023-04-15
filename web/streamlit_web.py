@@ -5,7 +5,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import streamlit_authenticator as stauth
-#import mysql.connector
+
 import pygsheets
 import yaml
 from yaml import SafeLoader
@@ -222,6 +222,7 @@ st.set_page_config(
 #
 #     return model_ft, imagenet_class_index
 
+  
 
 # ________________________________________________________________________________________________________
 # callbacks para botões:
@@ -234,10 +235,10 @@ def voltar_callback():
         ev_label = ''
         ev_string = f"ev_label_{st.session_state['name']}"
 
-        # gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-        gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+        # gc = pygsheets.authorize(service_file='data/dbpecem-cf62256085c7.json')
+        gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')
         sh = gc.open('teste_pecem')
-        wks = sh[0]
+        wks = sh[1]
         csv_infos = wks.get_as_df()
         # csv_infos = st.session_state.image_infos
         # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
@@ -249,10 +250,10 @@ def b1_callback():
     ev_label = 'Excelente'
     ev_string = f"ev_label_{st.session_state['name']}"
     
-    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    #gc = pygsheets.authorize(service_file='data/dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')
     sh = gc.open('teste_pecem')
-    wks = sh[0]
+    wks = sh[1]
     csv_infos = wks.get_as_df()
     #csv_infos = st.session_state.image_infos
     # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
@@ -265,10 +266,10 @@ def b2_callback():
     ev_label = 'Bom'
     ev_string = f"ev_label_{st.session_state['name']}"
     
-    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    #gc = pygsheets.authorize(service_file='data/dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')
     sh = gc.open('teste_pecem')
-    wks = sh[0]
+    wks = sh[1]
     csv_infos = wks.get_as_df()
     #csv_infos = st.session_state.image_infos
     # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
@@ -281,10 +282,10 @@ def b3_callback():
     ev_label = 'Ruim'
     ev_string = f"ev_label_{st.session_state['name']}"
     
-    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    #gc = pygsheets.authorize(service_file='data/dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')
     sh = gc.open('teste_pecem')
-    wks = sh[0]
+    wks = sh[1]
     csv_infos = wks.get_as_df()
     #csv_infos = st.session_state.image_infos
     # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
@@ -297,10 +298,10 @@ def b4_callback():
     ev_label = 'Pessimo'
     ev_string = f"ev_label_{st.session_state['name']}"
     
-    #gc = pygsheets.authorize(service_file='dbpecem-cf62256085c7.json')
-    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    #gc = pygsheets.authorize(service_file='data/dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')
     sh = gc.open('teste_pecem')
-    wks = sh[0]
+    wks = sh[1]
     csv_infos = wks.get_as_df()
     #csv_infos = st.session_state.image_infos
     # csv_infos.loc[csv_infos['image_path']==csv_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
@@ -325,9 +326,9 @@ def main():
     with open('web/config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
-    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')  # se conecta com a planilha
-    sh = gc.open('pecem_credenciais')  #
-    # wks = sh[0]                                                           # worksheet 1
+    gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')  # se conecta com a planilha
+    sh = gc.open('pecem_credenciais')
+    print("DEBUG: ---------\n", sh)
     logins = sh[1]
     pw_df = logins.get_as_df()
 
@@ -418,9 +419,8 @@ def main():
         if st.button('Trocar Senha') or st.session_state.reset_flag:
             st.session_state.new_password = st.text_input("Escreva a nova senha e aperte Enter")
             if st.session_state.reset_flag and not st.session_state.new_password == '':
-                gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')  # se conecta com a planilha
+                gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')  # se conecta com a planilha
                 sh = gc.open('pecem_credenciais')  #
-                # wks = sh[0]                                                           # worksheet 1
                 logins = sh[1]
                 pw_df = logins.get_as_df()
                 hashed_new_password = stauth.Hasher([st.session_state.new_password]).generate()
@@ -445,11 +445,11 @@ def pagina_web():
     """Função responsável por gerar a pagina web"""
     # model, imagenet_class_index = load_model()
 
-    gc = pygsheets.authorize(service_file='web/dbpecem-cf62256085c7.json')
+    gc = pygsheets.authorize(service_file='web/data/dbpecem-cf62256085c7.json')
 
     # Variaveis de session_state
     sh = gc.open('teste_pecem')
-    wks, passwords= sh[0], sh[1]
+    wks, passwords= sh[1], sh[2]
     infos = wks.get_as_df()  # create the dataframe
     st.session_state.image_infos = infos
     if 'count' not in st.session_state:
@@ -462,7 +462,7 @@ def pagina_web():
             st.session_state.count += 1
         avaliadas = len(infos.loc[(infos[f"ev_label_{st.session_state['name']}"]!="")])
  
-        my_bar = st.progress(avaliadas/(len(st.session_state.image_infos)-1))
+        my_bar = st.progress(avaliadas/(len(st.session_state.image_infos)))
 
         # header acima da imagem principal
         col1, col2, col3,col4=st.columns([3,7.2,1,1])
@@ -491,7 +491,7 @@ def pagina_web():
         st.image(img)
 
         # botões classificacao via streamlit
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3, c4, c5 = st.columns([0.8, 0.8, 0.8, 0.8, 0.5])
         with c1:
             st.button("Excelente", key="exe", on_click=b1_callback)
         with c2:
@@ -500,19 +500,10 @@ def pagina_web():
             st.button("Ruim", key="rum", on_click=b3_callback)
         with c4:
             st.button("Pessima", key="pes", on_click=b4_callback)
-
-        st.markdown("<hr>", unsafe_allow_html=True)
-
         # botao de voltar
-        c1, c2, c3, c4=st.columns([1,1,3.5,1])
-        with c4:
+        with c5:
             st.button("Voltar", key="back", on_click=voltar_callback)
-        #sql = 'UPDATE db_pecem SET pred_label=%s WHERE image_name=%s;'
-        #cur.execute(sql, (f'{prediction}', st.session_state.image_infos.iloc[st.session_state.count][0]))
-        #conn.commit()
-        #print(st.session_state.image_infos['image_path'][st.session_state.count])
-        #st.session_state.image_infos.loc[st.session_state.image_infos['image_path']==st.session_state.image_infos['image_path'][st.session_state.count], 'pred_label'] = st.session_state.prediction
-        #wks.set_dataframe(st.session_state.image_infos,(0,0))
+
 
         # Estilos
         components.html(
