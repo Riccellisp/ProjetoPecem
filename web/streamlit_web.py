@@ -479,11 +479,11 @@ def pagina_web():
             logoLesc=Image.open("web/logos/logoLesc.png")
             st.image(logoLesc,width=40)
 
-        with st.sidebar:
-            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][4][1::]), "Excelente")
-            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][5][1::]), "Boa")
-            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][6][1::]), "Ruim")
-            st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][7][1::]), "Pessima")
+        #with st.sidebar:
+        #    st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][4][1::]), "Excelente")
+        #    st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][5][1::]), "Boa")
+        #    st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][6][1::]), "Ruim")
+        #    st.image(Image.open(st.session_state.image_infos.iloc[st.session_state.count][7][1::]), "Pessima")
 
         img = Image.open('web/' + st.session_state.image_infos['image_path'][st.session_state.count][2::])
         # prediction = get_prediction(img, model, imagenet_class_index)
